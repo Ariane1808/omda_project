@@ -1,0 +1,50 @@
+.categories-container {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+    justify-content: center;
+}
+
+.categorie-card {
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    padding: 20px;
+    width: 250px;
+    height: 320px; /* un peu plus haute */
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+    display: flex;              /* ajout flex */
+    flex-direction: column;     /* empiler image + texte */
+    justify-content: center;    /* centrer verticalement */
+    align-items: center;        /* centrer horizontalement */
+}
+
+.categorie-card img {
+    width: 150px;       /* plus grand */
+    height: 150px;      /* plus grand */
+    object-fit: contain; /* garde les proportions */
+    margin-bottom: 15px;
+}
+
+
+.categorie-card h3 {
+    font-size: 20px;
+    margin: 10px 0;
+    color: #333;
+}
+
+.categorie-card p {
+    color: #777;
+    font-size: 14px;
+}
+
+.categorie-card:hover {
+    background: #f8f9fa;
+    transform: scale(1.08);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}

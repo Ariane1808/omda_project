@@ -1,0 +1,341 @@
+/* ----- RESET ----- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background-color: #f8f9fa;
+    color: #1f2937;
+}
+
+/* ----- CONTAINER PRINCIPAL ----- */
+.container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+/* ----- SIDEBAR ----- */
+.sidebar {
+    width: 250px;
+    min-width: 220px;
+    background-color: #1f1f1f;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-right: 1px solid #2c2c2c;
+    flex-shrink: 0;
+}
+
+.sidebar .logo h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #4fc3f7;
+    margin-bottom: 5px;
+}
+
+.sidebar .logo h3 {
+    font-size: 14px;
+    color: #81d4fa;
+    margin-bottom: 25px;
+    font-weight: 400;
+}
+
+.sidebar .onglets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sidebar .onglets li a {
+    text-decoration: none;
+    color: #cfd8dc;
+    font-size: 15px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar .onglets li a:hover,
+.sidebar .onglets li a.active {
+    background-color: #333333;
+    color: #4fc3f7;
+}
+
+.sidebar .onglets li a.logout {
+    margin-top: auto;
+    background: #ef4444;
+}
+
+.sidebar .onglets li a.logout:hover {
+    background: #dc2626;
+}
+
+/* ----- MAIN CONTENT ----- */
+.main-conteneur {
+    flex: 1;
+    margin-left: 250px;
+    padding: 30px 40px;
+    background: #f8f9fa;
+    overflow-x: auto;
+}
+
+/* ----- TITRES ----- */
+h2 {
+    color: #1f2937;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+/* ----- BOUTON AJOUT ----- */
+#addBtn {
+    background-color: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-bottom: 15px;
+    transition: all 0.3s;
+}
+
+#addBtn:hover {
+    background-color: #1d4ed8;
+}
+
+/* ----- FORMULAIRE AJOUT ----- */
+#addForm {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    max-width: 800px;
+    min-width: 320px;
+    width: 100%;
+}
+
+#addForm div {
+    margin-bottom: 12px;
+}
+
+#addForm label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-right: 6px;
+}
+
+#addForm input[type="text"],
+#addForm input[type="date"],
+#addForm select {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 0.9rem;
+}
+
+#addForm input[type="radio"] {
+    margin-right: 4px;
+    transform: scale(0.9);
+}
+
+#addForm button {
+    background-color: #2563eb;
+    color: #fff;
+    border-radius: 8px;
+    padding: 8px 14px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+#addForm button:hover {
+    background-color: #1d4ed8;
+}
+
+/* ----- RECHERCHE ----- */
+.search-container {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    gap: 8px;
+}
+
+.search-container input {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 0.9rem;
+    width: 220px;
+    min-width: 150px;
+}
+
+.search-container button {
+    background-color: #2563eb;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.search-container button:hover {
+    background-color: #1d4ed8;
+}
+
+/* ----- TABLEAU MODERNE ----- */
+.artist-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    background-color: #fff;
+    table-layout: auto;
+}
+
+.artist-table th,
+.artist-table td {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    word-wrap: break-word;
+}
+
+.artist-table th {
+    background-color: #f1f5f9;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+}
+
+.artist-row {
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.artist-row:hover {
+    background-color: #e0f2fe;
+    transform: translateX(2px);
+}
+
+.artist-table td:last-child {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* BOUTONS DANS TABLEAU */
+.artist-table a,
+.artist-table button {
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.artist-table a {
+    background-color: #2563eb;
+    color: #fff;
+}
+
+.artist-table a:hover {
+    background-color: #1d4ed8;
+}
+
+.artist-table .btn-danger {
+    background-color: #ef4444;
+    color: #fff;
+    border: none;
+}
+
+.artist-table .btn-danger:hover {
+    background-color: #dc2626;
+}
+
+/* ----- PAGINATION ----- */
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 15px;
+    font-size: 0.8rem;
+}
+
+.page-item {
+    list-style: none;
+}
+
+.page-link {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: #f3f4f6;
+    color: #374151;
+    text-decoration: none;
+    border: 1px solid #d1d5db;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.page-link:hover {
+    background-color: #2563eb;
+    color: #fff;
+}
+
+.page-item.active .page-link {
+    background-color: #2563eb;
+    color: #fff;
+    font-weight: bold;
+    border-color: #2563eb;
+}
+
+.page-item.disabled .page-link {
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    cursor: default;
+}
+
+/* ----- RESPONSIVE PC & TABLET ----- */
+@media (max-width: 1440px) {
+    .main-conteneur {padding: 20px 30px;}
+    #addForm {max-width: 700px;}
+}
+
+@media (max-width: 1366px) {
+    .sidebar {width: 220px;}
+    .main-conteneur {margin-left: 220px; padding: 20px;}
+    .artist-table th, .artist-table td {font-size: 0.85rem;}
+}
+
+@media (max-width: 1024px) {
+    .sidebar {position: fixed; left: 0; top: 0; height: 100%; z-index: 10;}
+    .main-conteneur {margin-left: 0; padding: 20px;}
+    .artist-table th, .artist-table td {font-size: 0.8rem;}
+}
+
+/* ----- MOBILE (si jamais ouvert sur petit écran) ----- */
+@media (max-width: 768px) {
+    .search-container {justify-content: center;}
+    .artist-table td:last-child {flex-direction: column;}
+    #addForm {max-width: 100%;}
+}
