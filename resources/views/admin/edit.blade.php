@@ -165,12 +165,13 @@ aside h3.username {
 .link a:hover::after {
     left: 0;
 }
-.sidebar img {
-    filter: invert(1); /* rend les icônes blanches sur fond sombre */
-}
+
 
      </style>
 </head>
+
+@include('includes.loader')
+
 <body>
    
 
@@ -183,13 +184,11 @@ aside h3.username {
         </div>
         <ul class="onglets">
     
-            <li><a href="/dashboard"><img src="{{ asset('icons/analytique.png') }}" alt="Dashboard" style="width: 15px; margin-right:8px;">Dashboard</a></li>
-            <li><a href="/artists"><img src="{{ asset('icons/artiste.png') }}" alt="Dashboard" style="width: 15px; margin-right:8px;">Gestion des artistes</a></li>
-            <li><a href="/oeuvres"><img src="{{ asset('icons/chef-doeuvre.png') }}" alt="Dashboard" style="width: 15px; margin-right:8px;">Gestion des œuvres</a></li>
-    
-            <li><a href="/admin" class="active"><img src="{{ asset('icons/administrateur.png') }}" alt="Dashboard" style="width: 15px; margin-right:8px;">Administration</a></li>
-            <li><a href="/calendrier"><img src="{{ asset('icons/calendrier.png') }}" alt="Dashboard" style="width: 15px; margin-right:8px;">Calendrier et Evenements</a></li>
-            <li><a href="/logout" class="logout" id="logoutLink"><img src="{{ asset('icons/se-deconnecter.png') }}" alt="Dashboard" style="width: 20px; margin-right:8px;">Se déconnecter</a></li>
+            <li><a href="/dashboard"><img src="{{ asset('icons/monitoring_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Dashboard" width="24" height="24" alt=""> Dashboard</a></li>
+            <li><a href="/artists" ><img src="{{ asset('icons/artist_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Artistes" width="24" height="24"> Artistes</a></li>
+            <li><a href="/oeuvres"><img src="{{ asset('icons/speech_to_text_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Oeuvres" width="24" height="24">Oeuvres</a></li>
+            <li><a href="/admin"  class="active"><img src="{{ asset('icons/admin_panel_settings_24dp_EFEFEF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Administration" width="24" height="24">Administration</a></li>
+            <li><a href="/logout" class="logout" id="logoutLink"><img src="{{ asset('icons/logout_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Logout" width="24" height="24">Se déconnecter</a></li>
 
         </ul>
     </nav>
@@ -201,15 +200,13 @@ aside h3.username {
 <form action="{{ route('admin.update', $admin->id)  }}" method="POST" style="display:flex; flex-direction:column; gap:15px; margin-top:15px;">
             @csrf
             @method('PUT')
-            <div>
-                <label for="username" style="color:black;">Nom d'utilisateur</label>
-                <input type="text" name="username" id="username" required style="width:100%; padding:8px; border-radius:6px; border:none; background: rgba(255,255,255,0.2); color:rgb(10, 10, 10);">
-            </div>
-            <div>
-                <label for="password" style="color:black;">Mot de passe</label>
-                <input type="password" name="password" id="password" required style="width:100%; padding:8px; border-radius:6px; border:none; background: rgba(255,255,255,0.2); color:rgb(5, 5, 5);">
-            </div>
-            <button type="submit" style="background:#2563eb; color:white; padding:10px; border-radius:6px;">Modifier</button>
+            <input type="text" name="username" placeholder="Nom d’utilisateur" required><br>
+            <input type="email" name="email" placeholder="Email" required><br>
+            <input type="text" name="adresse" placeholder="Adresse" required><br>
+            <input type="text" name="telephone" placeholder="Numéro" required><br>
+            <input type="password" name="password" placeholder="Mot de passe" required><br>
+            <button type="submit">Ajouter</button>
+            <button type="button" onclick="document.getElementById('formAjout').style.display='none'">Annuler</button>
 </form>
 
 

@@ -125,12 +125,13 @@ aside h3.username {
 .link a:hover::after {
     left: 0;
 }
-.sidebar img {
-    filter: invert(1); /* rend les icônes blanches sur fond sombre */
-}
+
 
      </style>
 </head>
+
+@include('includes.loader')
+
 <body>
    
 
@@ -143,15 +144,16 @@ aside h3.username {
         </div>
         <ul class="onglets">
     
-            <li><a href="/dashboard"><img src="{{ asset('icons/analytique.png') }}" alt="Dashboard" style="width: 15px; margin-right:8px;">Dashboard</a></li>
-            <li><a href="/artists"><img src="{{ asset('icons/artiste.png') }}" alt="Dashboard" style="width: 15px; margin-right:8px;">Gestion des artistes</a></li>
-            <li><a href="/oeuvres"><img src="{{ asset('icons/chef-doeuvre.png') }}" alt="Dashboard" style="width: 15px; margin-right:8px;">Gestion des œuvres</a></li>
-    
-            <li><a href="/admin" class="active"><img src="{{ asset('icons/administrateur.png') }}" alt="Dashboard" style="width: 15px; margin-right:8px;">Administration</a></li>
-            <li><a href="/calendrier"><img src="{{ asset('icons/calendrier.png') }}" alt="Dashboard" style="width: 15px; margin-right:8px;">Calendrier et Evenements</a></li>
-            <li><a href="/logout" class="logout" id="logoutLink"><img src="{{ asset('icons/se-deconnecter.png') }}" alt="Dashboard" style="width: 20px; margin-right:8px;">Se déconnecter</a></li>
+            <li><a href="/dashboard"><img src="{{ asset('icons/monitoring_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Dashboard" width="24" height="24" alt=""> Dashboard</a></li>
+            <li><a href="/artists" ><img src="{{ asset('icons/artist_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Artistes" width="24" height="24"> Artistes</a></li>
+            <li><a href="/oeuvres"><img src="{{ asset('icons/speech_to_text_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Oeuvres" width="24" height="24">Oeuvres</a></li>
+            <li><a href="/admin"  class="active"><img src="{{ asset('icons/admin_panel_settings_24dp_EFEFEF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Administration" width="24" height="24">Administration</a></li>
+            <li><a href="/logout" class="logout" id="logoutLink"><img src="{{ asset('icons/logout_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Logout" width="24" height="24">Se déconnecter</a></li>
 
         </ul>
+            {{-- <li><a href="/logout" class="logout" ><img src="{{ asset('icons/se-deconnecter.png') }}" alt="Dashboard" style="width: 20px; margin-right:8px;">Se déconnecter</a></li> --}}
+
+        
     </nav>
 
 
@@ -161,7 +163,59 @@ aside h3.username {
 
 
 
+ <div class="info-card">
+            <h3>Détails de votre compte</h3>
+           
+            <table>
+                <tr>
+                    <th>ID Administrateur :</th>
+                    <td>{{ $admin->id }}</td>
+                </tr>
+                <tr>
+                    <th>Nom d’utilisateur :</th>
+                    <td>{{ $admin->username }}</td>
+                </tr>
+                <tr>
+                    <th>Email :</th>
+                    <td>{{ $admin->email}}</td>
+                </tr>
+                <tr>
+                    <th>Adresse :</th>
+                    <td>{{ $admin->adresse }}</td>
+                </tr>
+                <tr>
+                    <th>Telephone :</th>
+                    <td>{{ $admin->telephone }}</td>
+                </tr>
+                
+            </table>
+        </div>
 
+
+
+
+</div>
+<aside class="silde-in-right">
+  <img src="../images/logo3.png" alt="">
+    <h2>Votre centre d'Administration</h2>
+    <h3 class="username">{{ $username }}</h3>
+        <div class="link">
+            <ul>
+                <li>
+                    <a href="{{ route('admin.gestion') }}">
+                        Gestion de mon compte
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.index') }}">
+                        Retour
+                    </a>
+                </li>
+            </ul>
+        </div>
+</aside>
+
+</div>
 
 <script>
     const modal = document.getElementById('adminModal');
@@ -197,27 +251,5 @@ aside h3.username {
     }
 });
 </script>
-</div>
-<aside class="silde-in-right">
-  <img src="../images/logo3.png" alt="">
-    <h2>Votre centre d'Administration</h2>
-    <h3 class="username">{{ $username }}</h3>
-        <div class="link">
-            <ul>
-                <li>
-                    <a href="{{ route('admin.gestion') }}">
-                        Gestion de mon compte
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.index') }}">
-                        Retour
-                    </a>
-                </li>
-            </ul>
-        </div>
-</aside>
-
-</div>
 </body>
 </html>

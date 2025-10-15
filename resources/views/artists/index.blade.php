@@ -106,6 +106,7 @@
       margin-top: 30px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100%;
     }
 
     .recent-artists h2 {
@@ -133,7 +134,7 @@
     position: fixed;
     bottom: 30px;
     right: 30px;
-    background-color: rgb(212, 0, 0);
+    background-color: rgba(5, 160, 0, 0.699);
     color: white;
     padding: 12px;
     border-radius: 6px;
@@ -141,9 +142,25 @@
     z-index: 9999;
   }
 
+  .chart-container {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+.chart-container:hover {
+    transform: scale(1.03);
+}
+
+
   </style>
   <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
 </head>
+
+@include('includes.loader')
+
+
 <body>
 <div class="container">
   <nav class="sidebar">
@@ -151,14 +168,15 @@
       <h2>Office Malagasy du Droit d'Auteur</h2>
       <h3>O.M.D.A</h3>
     </div>
-    <ul class="onglets">
-      <li><a href="/dashboard">Dashboard</a></li>
-      <li><a href="/artists" class="active">Gestion des artistes</a></li>
-      <li><a href="/oeuvres">Gestion des œuvres</a></li>
-      <li><a href="/admin">Administration</a></li>
-      <li><a href="/calendrier">Calendrier et Evenements</a></li>
-      <li><a href="/logout" class="logout">Se déconnecter</a></li>
-    </ul>
+     <ul class="onglets">
+    
+            <li><a href="/dashboard"><img src="{{ asset('icons/monitoring_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Dashboard" width="24" height="24" alt=""> Dashboard</a></li>
+            <li><a href="/artists" class="active"><img src="{{ asset('icons/artist_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Artistes" width="24" height="24"> Artistes</a></li>
+            <li><a href="/oeuvres"><img src="{{ asset('icons/speech_to_text_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Oeuvres" width="24" height="24">Oeuvres</a></li>
+            <li><a href="/admin"  ><img src="{{ asset('icons/admin_panel_settings_24dp_EFEFEF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Administration" width="24" height="24">Administration</a></li>
+            <li><a href="/logout" class="logout" id="logoutLink"><img src="{{ asset('icons/logout_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Logout" width="24" height="24">Se déconnecter</a></li>
+
+        </ul>
   </nav>
   {{-- notif pour suppression d'artiste --}}
 @if(session('success'))
@@ -206,7 +224,9 @@
       </div>
     </div>
 
-    <div class="recent-artists">
+    <div class="bottom" style="display: flex; gap: 30px; max-width: 1200px; margin:auto;padding:0px 40px;align-items:center;">
+
+        <div class="recent-artists">
       <h2>🎤 Derniers artistes ajoutés</h2>
       <ul>
         @foreach($recentArtists as $artist)
@@ -218,6 +238,85 @@
         @endforeach
       </ul>
     </div>
+
+       @php
+    $labels = [
+        'LYR' => 'Artistes en Musique',
+        'LIT' => 'Artistes en Littérature',
+        'DRA' => 'Artistes en Dramatique',
+        'AAV' => 'Artistes en Audiovisuel',
+    ];
+
+    $colors = [
+        'LYR' => '#3498db',   // bleu
+        'LIT' => '#9b59b6',   // violet
+        'DRA' => '#e67e22',   // orange
+        'AAV' => '#2ecc71',   // vert
+    ];
+@endphp
+   <div class="chart-container" style="width: 400px; height: 400px;">
+    <canvas id="artistsPieChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctxPie = document.getElementById('artistsPieChart').getContext('2d');
+
+    const artistsData = @json($artistsByCategory->toArray());
+
+    const labels = artistsData.map(cat => "{{ $labels['" + cat.categorie + "'] ?? '' }}" || cat.categorie);
+    const data = artistsData.map(cat => cat.total);
+
+    const pieData = {
+        labels: labels,
+        datasets: [{
+            data: data,
+            backgroundColor: [
+                '#3498db',
+                '#9b59b6',
+                '#e67e22',
+                '#2ecc71',
+                '#f1c40f',
+                '#e74c3c'
+            ],
+            borderWidth: 2,
+            borderColor: '#fff',
+            hoverOffset: 8
+        }]
+    };
+
+    const pieConfig = {
+        type: 'doughnut',
+        data: pieData,
+        options: {
+            cutout: '60%',
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#333',
+                        font: { size: 14 }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Répartition des artistes par catégorie',
+                    color: '#1f2937',
+                    font: { size: 18, weight: 'bold' }
+                }
+            }
+        }
+    };
+
+    new Chart(ctxPie, pieConfig);
+</script>
+
+    </div>
+  
+
+   
+
   </div>
 </div>
 

@@ -1,0 +1,15 @@
+/* public/fullcalendar/main.css */
+.fc {
+  font-family: Arial, sans-serif;
+}
+
+.fc .fc-toolbar-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.fc .fc-event {
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 0.85rem;
+}

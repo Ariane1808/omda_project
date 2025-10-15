@@ -15,7 +15,7 @@ class OeuvreNonMusique extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $fillable = ['code_titre', 'date_depot', 'num', 'titre', 'categories', 'auteur', 'part'];
-       
+          public $timestamps = false;
     public function oeuvresNonMusique()
     {
         return $this->hasMany(Artist::class, 'num', 'num');

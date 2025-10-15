@@ -13,16 +13,37 @@
     height: 120px;
 }
 
-.card {
+/* .card {
     background: linear-gradient(135deg, #fafafa, var(--color-primary));
     color: rgb(47, 47, 100);
     padding: 30px;
     border-radius: 12px;
     /* text-align: center; */
-    width: 35%;
+    /* width: 35%;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     transition: transform 0.3s ease;
-    height: 100%;
+    height: 100%; */
+/* } */
+
+.card {
+  color: rgb(47, 47, 100);
+  padding: 1rem;
+  background-color: #e5e7eb;
+  box-shadow: -10px -10px 20px white, 10px 10px 20px rgb(153, 161, 175), inset -10px -10px 20px rgb(209, 213, 220);
+  width: 35%;
+  border-radius: 20px;
+  transition: transform 0.3s ease;
+  height: 100%;
+}
+
+.data p {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  color: #1f2937;
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  text-align: left;
 }
 
 .card:hover {
@@ -201,9 +222,9 @@ aside h3.username {
 .link a:hover::after {
     left: 0;
 }
-.sidebar img {
+/* .sidebar img {
     filter: invert(1); /* rend les icônes blanches sur fond sombre */
-}
+
 @media (max-width: 1366px){
     aside{
         padding:20px;
@@ -224,6 +245,9 @@ aside h3.username {
 }
     </style>
 </head>
+
+@include('includes.loader')
+
 <body>
 
 <div class="container">
@@ -236,15 +260,13 @@ aside h3.username {
         <h3>O M D A</h3>
         </div>
         <ul class="onglets">
-         
-            <li><a href="/dashboard" class="active">Dashboard</a></li>
-            <li><a href="/artists">Gestion des artistes</a></li>
-            <li><a href="/oeuvres">Gestion des œuvres</a></li>
-           
-            <li><a href="/admin">Administration</a></li>
-            <li><a href="/calendrier">Calendrier et Evenements</a></li>
-            <li><a href="/logout" class="logout">Se déconnecter</a></li>
-         
+    
+            <li><a href="/dashboard" class="active"><img src="{{ asset('icons/monitoring_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Dashboard" width="24" height="24" alt=""> Dashboard</a></li>
+            <li><a href="/artists" ><img src="{{ asset('icons/artist_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Artistes" width="24" height="24">  Artistes</a></li>
+            <li><a href="/oeuvres" ><img src="{{ asset('icons/speech_to_text_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Oeuvres" width="24" height="24"> Oeuvres</a></li>
+            <li><a href="/admin"  ><img src="{{ asset('icons/admin_panel_settings_24dp_EFEFEF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Administration" width="24" height="24">Administration</a></li>
+            <li><a href="/logout" class="logout" id="logoutLink"><img src="{{ asset('icons/logout_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Logout" width="24" height="24">Se déconnecter</a></li>
+
         </ul>
     </nav>
 <div class="main-conteneur">
@@ -264,18 +286,19 @@ aside h3.username {
              <div class="cards-container">
                 <div class="card"  class="block artiste" onclick="window.location.href='/artists'">
                     <h3>Nombre total des artistes</h3>
-                    <p style="font-size: 2rem; font-weight: bold;">{{ $totalArtists }}</p>
+                    
+                    <div class="data"><p style="font-size: 2rem; font-weight: bold;">{{ $totalArtists }}</p></div>
                 </div>
                 <div class="card" class="block oeuvre" onclick="window.location.href='/oeuvres'">
                     <h3>Nombre total des oeuvres</h3>
-                    <p style="font-size: 2rem; font-weight: bold;">{{ $totalOeuvres }}</p>
+                    <div class="data"><p style="font-size: 2rem; font-weight: bold;">{{ $totalOeuvres }}</p></div>
                 </div>
                 {{-- miaraka amle atsy ambany --}}
-                <div class="col-md-3" style="background: linear-gradient(135deg, #ffffff, var(--color-primary)); color:#111827;">  
+                <div class="col-md-3" style="color: rgb(47, 47, 100);padding: 1rem;background-color: #e5e7eb;box-shadow: -10px -10px 20px white, 10px 10px 20px rgb(153, 161, 175), inset -10px -10px 20px rgb(209, 213, 220);width: 35%;border-radius: 20px;transition: transform 0.3s ease;height: 100%;">  
                     <div>
                         <div class="card-body">
                              <h4 class="card-title">Moyenne d’œuvres par artiste</h4>
-                             <p class="card-text fs-3" style="font-size: 2rem; font-weight: bold;">{{ $moyenneOeuvresParArtiste }}</p>
+                             <div class="data"><p class="card-text fs-3" style="font-size: 2rem; font-weight: bold;">{{ $moyenneOeuvresParArtiste }}</p></div>
                         </div>
                     </div>
                 </div>
@@ -376,7 +399,7 @@ aside h3.username {
         </div>
            
 <div style="display: flex; flex-direction:column; gap:20px; width:25%; margin-top:15px; height: 350px;">
-<div class="col-md-3" style="background-color:#3498db ">
+<div class="col-md-3" style="background-color:#3498db; ">
     <div>
         <div class="card-body">
             <h4 class="card-title">Artistes inscrits cette année</h4>
@@ -481,5 +504,9 @@ aside h3.username {
 </script>
 
 
+
+
 </body>
+
+
 </html>

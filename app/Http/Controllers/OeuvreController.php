@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Admin;
 use App\Models\Artist;
 use App\Models\OeuvreMusique;
 use App\Models\OeuvreNonMusique;
+use App\Models\ActivityLog;
 
 class OeuvreController extends Controller
 {
@@ -13,9 +15,13 @@ class OeuvreController extends Controller
     {
         $musiques = OeuvreMusique::all();
         $nonMusiques = OeuvreNonMusique::all();
-
-        return view('oeuvres.index', compact('musiques', 'nonMusiques'));
+        $recentOeuvres = OeuvreMusique::orderBy('date_depot','desc')->take(5)->get();
+        if (!$recentOeuvres) {
+            $recentOeuvres = OeuvreNonMusique::orderBy('date_depot','desc')->take(5)->get();
+        }
+        return view('oeuvres.index', compact('musiques', 'nonMusiques', 'recentOeuvres'));
     }
+
 
   public function create(Request $request)
 {
@@ -56,6 +62,19 @@ class OeuvreController extends Controller
                 'part' => $request->part
             ]);
         }
+      
+         if (!session()->has('admin_id')) {
+            return redirect('/login');
+        }
+
+// Exemple après un ajout d'œuvre
+ActivityLog::create([
+    'user_id' => session('admin_id'),
+    'action' => 'ajouté',
+    'model_type' => 'oeuvre',
+    'details' => 'Ajout de l’œuvre ' . $request->titre,
+]);
+
 
         return redirect()->route('oeuvres.index')->with('success', 'Œuvre ajoutée avec succès.');
     }
@@ -125,8 +144,18 @@ if ($request->filled('search')) {
     public function show($num)
     {
         $oeuvre = OeuvreMusique::where('num', $num)->firstOrFail();
-        $artist = $oeuvre->artist;
-        return redirect()->route('artists.show', $artist->num);    
+        if ($oeuvre->categorie === 'LYR') {
+            $artist = $oeuvre->artist;
+            // $artist = $oeuvres->oeuvresMusique;
+            $type = 'musique';
+        } else {
+            $artist = $oeuvre->artist;
+            // $oeuvres = $artis->oeuvresNonMusique;
+            $type = 'non_musique';
+        }
+        
+        compact('type','oeuvre');
+        return view('artists.show', compact('artist', 'oeuvres', 'type')); 
     }
     public function edit($code_titre)
     {
@@ -143,16 +172,44 @@ if ($request->filled('search')) {
         }
         $oeuvre->update($request->all());
         
+         if (!session()->has('admin_id')) {
+            return redirect('/login');
+        }
+
+// Exemple après un ajout d'œuvre
+ActivityLog::create([
+    'user_id' => session('admin_id'),
+    'action' => 'modifié',
+    'model_type' => 'oeuvre',
+    'details' => 'Modification de l’œuvre ' . $request->titre,
+]);
+
         return redirect()->route('oeuvres.index')->with('success', 'Oeuvre modifié avec succès');
     }
     public function destroy($code_titre)
     {
+           
+
+
         $oeuvre = OeuvreMusique::where('code_titre', $code_titre)->first();
         if (!$oeuvre) {
             $oeuvre = OeuvreNonMusique::findOrFail($code_titre);
         }
+         if (!session()->has('admin_id')) {
+            return redirect('/login');
+        }
+
+    // Exemple après un ajout d'œuvre
+    ActivityLog::create([
+    'user_id' => session('admin_id'),
+    'action' => 'supprimé',
+    'model_type' => 'oeuvre',
+    'details' => 'Suppression de l’œuvre ' . $oeuvre->titre . 'de l\'artiste' . $oeuvres->nom,
+    ]);
+
         $oeuvre->delete();
 
+     
         return redirect()->route('oeuvres.index')->with('success', 'Oeuvre supprimé avec succès');
     }
 }

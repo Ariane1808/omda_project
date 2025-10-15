@@ -36,9 +36,53 @@
         .back-btn:hover {
             background: #0056b3;
         }
+        /* From Uiverse.io by Madflows */ 
+.button {
+    margin: 20px auto;
+  position: relative;
+  overflow: hidden;
+  height: 3rem;
+  padding: 0 2rem;
+  border-radius: 1.5rem;
+  background: #3d3a4e;
+  background-size: 400%;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.button:hover::before {
+  transform: scaleX(1);
+}
+
+.button-content {
+  position: relative;
+  z-index: 1;
+}
+
+.button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  width: 100%;
+  height: inherit;
+  border-radius: inherit;
+  background: linear-gradient(
+    82.3deg,
+    rgba(150, 93, 233, 1) 10.8%,
+    rgba(99, 88, 238, 1) 94.3%
+  );
+  transition: all 0.475s;
+}
     </style>
 <script src="{{ asset('js/xlsx.full.min.js') }}"></script>
 </head>
+
+@include('includes.loader')
+
 <body>
     <div class="container">
      <nav class="sidebar">
@@ -46,15 +90,14 @@
         <h2>Office Malagasy du Droit d'Auteur</h2>
         <h3>O M D A</h3>
         </div>
-        <ul class="onglets">
-       
-            <li><a href="/dashboard">Dashboard</a></li>
-            <li><a href="/artists" class="active">Gestion des artistes</a></li>
-            <li><a href="/oeuvres">Gestion des œuvres</a></li>
-            <li><a href="/admin">Administration</a></li>
-            <li><a href="/calendrier">Calendrier et Evenements</a></li>
-            <li><a href="/logout" class="logout">Se déconnecter</a></li>
-           
+         <ul class="onglets">
+    
+            <li><a href="/dashboard"><img src="{{ asset('icons/monitoring_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Dashboard" width="24" height="24" alt=""> Dashboard</a></li>
+            <li><a href="/artists" class="active"><img src="{{ asset('icons/artist_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Artistes" width="24" height="24"> Artistes</a></li>
+            <li><a href="/oeuvres"><img src="{{ asset('icons/speech_to_text_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Oeuvres" width="24" height="24">Oeuvres</a></li>
+            <li><a href="/admin"  ><img src="{{ asset('icons/admin_panel_settings_24dp_EFEFEF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Administration" width="24" height="24">Administration</a></li>
+            <li><a href="/logout" class="logout" id="logoutLink"><img src="{{ asset('icons/logout_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Logout" width="24" height="24">Se déconnecter</a></li>
+
         </ul>
     </nav>
     <div class="main-conteneur">
@@ -140,7 +183,7 @@
 @else
     <p>Aucune œuvre trouvée.</p>
 @endif
-        <button id="exportExcelBtn">Exporter Excel</button>
+        <button class="button" id="exportExcelBtn"><span class="button-content">Exporter vers Excel </span></button>
 
 
         <script>

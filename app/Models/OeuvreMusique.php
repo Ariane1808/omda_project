@@ -14,7 +14,7 @@ class OeuvreMusique extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $fillable = ['date_depot', 'code_titre', 'titre', 'categorie', 'num', 'nom', 'pseudo', 'groupes', 'qualite', 'droit', 'part', 'hologramme'];
-
+    public $timestamps = false;
     public function oeuvresMusique()
     {
         return $this->hasMany(Artist::class, 'num', 'num');

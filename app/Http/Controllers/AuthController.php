@@ -7,9 +7,13 @@ use App\Models\Admin;
 use App\Models\Artist;
 use App\Models\OeuvresMusique;
 use App\Models\OeuvresNonMusique;
+use App\Models\Event;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\ActivityLog;
+
+
 class AuthController extends Controller
 {
     // Afficher le formulaire de login
@@ -81,7 +85,7 @@ class AuthController extends Controller
     $oeuvresThisYear = \App\Models\OeuvreMusique::whereYear('date_depot', $currentYear)->count()+ \App\Models\OeuvreNonMusique::whereYear('date_depot', $currentYear)->count();
 
     // moyenne oeuvre par artiste
-    $moyenneOeuvresParArtiste = $totalArtists > 0 ? round($totalOeuvres / $totalArtists, 2) : 0;
+    $moyenneOeuvresParArtiste = $totalArtists > 0 ? round($totalOeuvres / $totalArtists, 0) : 0;
 
 
     // Top artiste par nombre d’œuvres
@@ -159,6 +163,8 @@ for ($i = 1; $i <= 12; $i++) {
         session()->flush();
         return redirect('/login');
     }
+
+
     public function index()
     {    
          if (!session()->has('admin_id')) {
@@ -166,24 +172,66 @@ for ($i = 1; $i <= 12; $i++) {
         }
         // Récupérer tous les utilisateurs ayant le rôle "admin"
         $admins = Admin::all(); // Ajuste selon ton modèle
-         return view('admin.index', compact('admins'))->with('username', session('username'));
+         $activities = ActivityLog::latest()->take(10)->get(); // 10 dernières actions
+
+
+        //   $events = Event::all();
+        $events = Event::orderBy('start', 'desc')->paginate(3);
+         // Format pour Flatpickr
+   $formattedEvents = $events->map(function($event) {
+    return [
+        'id' => $event->id,
+        'title' => $event->title,
+        'start' => $event->start,
+        'end' => $event->end,
+        'description' => $event->description,
+    ];
+});
+
+
+        foreach ($events as $event) {
+            $formattedEvents[] = [
+                'id' => $event->id,  
+                'title' => $event->title,
+                'start' => $event->start,
+                'end' => $event->end,
+                'description' => $event->description,
+            ];
+        }
+
+        $eventDates = $events->pluck('start')->map(function($date) {
+    return \Carbon\Carbon::parse($date)->format('Y-m-d');
+});
+
+         return view('admin.index', compact('admins','activities','events','eventDates','formattedEvents'))->with('username', session('username'));
     }
+
+
     public function create()
     {
     return view('admin.create'); // formulaire d'ajout
     }
 
+
+
     public function store(Request $request)
     {
-    $request->validate([
-        'username' => 'required|unique:admin,username',
-        'password' => 'required|min:6',
+   $request->validate([
+        'username'  => 'required|string|max:255|unique:admin,username',
+        'email'     => 'required|email|unique:admin,email',
+        'adresse'   => 'nullable|string|max:255',
+        'telephone' => 'nullable|string|max:30',
+        'password'  => 'required|min:6',
     ]);
 
     \App\Models\Admin::create([
-        'username' => $request->username,
-        'password' => bcrypt($request->password), // hash du mot de passe
+        'username'  => $request->username,
+        'email'     => $request->email,
+        'adresse'   => $request->adresse,
+        'telephone' => $request->telephone,
+        'password'  => bcrypt($request->password),
     ]);
+
 
     return redirect()->route('admin.index')->with('success', 'Administrateur ajouté avec succès.');
     }
@@ -202,7 +250,11 @@ for ($i = 1; $i <= 12; $i++) {
 {
     $request->validate([
         'username' => 'required',
+        'email' => 'required|email',
+        'adresse' => 'required|string|max:255',
+        'telephone' => 'required|string|max:30',
         'password' => 'nullable|min:6', // nullable = pas obligé de modifier le mot de passe
+
     ]);
 
     $admin = Admin::findOrFail($id);
@@ -228,20 +280,95 @@ for ($i = 1; $i <= 12; $i++) {
     }
 
 
+    public function updateInfo(Request $request)
+{
+    $request->validate([
+        'username' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'adresse' => 'required|string|max:255',
+        'telephone' => 'required|string|max:30',
+        'current_password' => 'required'
+    ]);
+
+    $admin = Admin::find(session('admin_id'));
+
+    if (!Hash::check($request->current_password, $admin->password)) {
+        return back()->with('error', 'Mot de passe actuel incorrect.');
+    }
+
+    $admin->update([
+        'username'  => $request->username,
+        'email'     => $request->email,
+        'adresse'   => $request->adresse,
+        'telephone' => $request->telephone,
+    ]);
+
+    session(['username' => $admin->username]);
+
+    return back()->with('success', 'Modification du profil réussie.');
+}
+
+    public function updatePassword(Request $request)
+{
+    $request->validate([
+        'old_password' => 'required',
+        'new_password' => 'required|min:6|confirmed',
+    ]);
+
+    $admin = Admin::find(session('admin_id'));
+
+    if (!Hash::check($request->old_password, $admin->password)) {
+        return back()->with('error', 'Ancien mot de passe incorrect.');
+    }
+
+    $admin->password = Hash::make($request->new_password);
+    $admin->save();
+
+    return back()->with('success', 'Mot de passe modifié avec succès.');
+}
+
+public function deleteAccount(Request $request)
+{
+    $request->validate(['password' => 'required']);
+
+    $admin = Admin::find(session('admin_id'));
+
+    if (!Hash::check($request->password, $admin->password)) {
+        return back()->with('error', 'Mot de passe incorrect.');
+    }
+
+    $admin->delete();
+    session()->forget('admin_id');
+
+    return redirect('/login')->with('success', 'Compte supprimé avec succès.');
+}
+
+
+
     public function gestion()
     {
         if (!session()->has('admin_id')) {
             return redirect('/login');
         }
-        $admins = Admin::all(); // Ajuste selon ton modèle
-        return view('admin.gestion', compact('admins'))->with('username', session('username'));
+        $admin = Admin::find(session('admin_id')); // Ajustement selon le modèle
+        return view('admin.gestion', compact('admin'))->with('username', session('username'));
     }
     public function information()
     {
          if (!session()->has('admin_id')) {
             return redirect('/login');
         }
-        $admins = Admin::all(); // Ajuste selon ton modèle
-        return view('admin.information', compact('admins'))->with('username', session('username'));
+        $admin = Admin::find(session('admin_id'));
+
+        if (!$admin) {
+        // sécurité : si l'ID de session est invalide on redirige vers login
+        session()->forget('admin_id');
+        return redirect('/login')->with('error', 'Administrateur introuvable.');
     }
+
+        return view('admin.information', compact('admin'))->with('username', session('username'));
+    }
+
+
+
 }

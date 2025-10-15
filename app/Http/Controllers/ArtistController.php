@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Admin;
 use App\Models\Artist;
+use Illuminate\Support\Facades\DB;
+use App\Models\ActivityLog;
 
 class ArtistController extends Controller
 {
@@ -26,7 +29,16 @@ class ArtistController extends Controller
 
         // $artists = Artist::orderBy('pseudo', 'asc')->get(); raha alefa par alphabet
 //                   chemin                variable io ambony io   
+
+
+
+         // 1. Nombre total d'artistes
+    $totalArtists = Artist::count();
         
+    // Nombre d’artistes par catégorie
+         $artistsByCategory = Artist::select('categorie', DB::raw('count(*) as total'))
+        ->groupBy('categorie')
+        ->get();
   
         // Liste fixe des catégories
         $categorie = [
@@ -47,7 +59,7 @@ class ArtistController extends Controller
         ->paginate(10)
         ->appends(request()->query()); // <-- ajoute les paramètres dans la pagination
 
-         return view('artists.index', compact('artists', 'categorie', 'recentArtists', 'sort', 'order'));
+         return view('artists.index', compact('totalArtists','artists', 'categorie', 'recentArtists', 'sort', 'order', 'artistsByCategory'));
     }
 
 public function byCategory(Request $request, $categorie)
@@ -110,7 +122,16 @@ public function store(Request $request)
     'statut' => $request->statut,
     'hologramme' => $request->hologramme,
 ]);
+if (!session()->has('admin_id')) {
+            return redirect('/login');
+        }
 
+    ActivityLog::create([
+        'user_id' => session('admin_id'),
+        'action' => 'ajouté',
+        'model' => 'Artiste',
+        'details' => 'Nouvel artiste ajouté : ' . $request->nom,
+    ]);
 
     // Vérifie si l’insertion a réussi
     if ($artist) {
@@ -135,12 +156,41 @@ public function store(Request $request)
 
         $artist->update($request->all()); // met à jour tous les champs
 
+          if (!session()->has('admin_id')) {
+            return redirect('/login');
+        }
+
+        ActivityLog::create([
+    'user_id' => session('admin_id'),
+    'action' => 'modifié',
+    'model' => 'Artiste',
+    'details' => 'Modification de l\'artiste ' . $request->nom,
+]);
+
+  
+
+
         return redirect()->route('artists.byCategory', $artist->categorie)->with('success', 'Artiste modifié avec succès');
     }
         public function destroy($num)
     {
         $artist = Artist::findOrFail($num);
+
+         if (!session()->has('admin_id')) {
+            return redirect('/login');
+        }
+
+        ActivityLog::create([
+    'user_id' => session('admin_id'),
+    'action' => 'supprimé',
+    'model' => 'Artiste',
+    'details' => 'Suppression de l\'artiste ' . $artist->nom,
+]);
+
         $artist->delete();
+
+       
+
 
         return redirect()->route('artists.index')->with('success', 'Artiste supprimé avec succès');
     }
@@ -151,17 +201,38 @@ public function store(Request $request)
     //    return view('artists.show', compact('artist'));
     // }
 
-    public function show($num)
+//     public function show($num)
+// {
+//     $artist = Artist::where('num', $num)->firstOrFail();
+
+//     if ($artist->categorie === 'LYR') {
+//         $oeuvres = $artist->oeuvresMusique;
+//         $type = 'musique';
+//     } else {
+//         $oeuvres = $artist->oeuvresNonMusique;
+//         $type = 'non_musique';
+//     }
+
+//     return view('artists.show', compact('artist', 'oeuvres', 'type'));
+// }
+
+
+public function show($num)
 {
     $artist = Artist::where('num', $num)->firstOrFail();
 
-    if ($artist->categorie === 'LYR') {
-        $oeuvres = $artist->oeuvresMusique;
-        $type = 'musique';
-    } else {
-        $oeuvres = $artist->oeuvresNonMusique;
-        $type = 'non_musique';
+    // Récupérer toutes les œuvres possibles, peu importe la table
+    $oeuvresMusique = $artist->oeuvresMusique;
+    
+    $oeuvresNonMusique = $artist->oeuvresNonMusique;
+    if($oeuvresMusique ){
+         $type = 'musique';
     }
+    else{
+          $type = 'non_musique';
+    }
+    // Fusionner les deux collections
+    $oeuvres = $oeuvresMusique->merge($oeuvresNonMusique);
 
     return view('artists.show', compact('artist', 'oeuvres', 'type'));
 }

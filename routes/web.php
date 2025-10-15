@@ -4,6 +4,8 @@ use App\Http\Controllers\AuthController;
 
 use Illuminate\Support\Facades\Route;
 
+
+
 Route::get('/', function () {
     return view('login'); // On affiche la vue login par défaut
 });
@@ -17,10 +19,17 @@ Route::get('/admin', [AuthController::class, 'index'])->name('admin.index');
 Route::get('/admin/create', [AuthController::class, 'create'])->name('admin.create');
 Route::post('/admin', [AuthController::class, 'store'])->name('admin.store');
 Route::get('/admin/gestion', [AuthController::class, 'gestion'])->name('admin.gestion');
+Route::post('/admin/deleteAccount', [AuthController::class, 'deleteAccount'])->name('admin.deleteAccount');
 Route::get('/admin/information', [AuthController::class, 'information'])->name('admin.information');
 Route::get('/admin/{id}/edit', [AuthController::class, 'edit'])->name('admin.edit');
 Route::put('/admin/{id}', [AuthController::class, 'update'])->name('admin.update');
 Route::delete('/admin/{id}', [AuthController::class, 'destroy'])->name('admin.destroy');
+// Route::post('/events', [EventController::class,'store'])->name('events.store');
+// Route::put('/events/{id}', [EventController::class,'update'])->name('events.update');
+// Route::delete('/events/{id}', [EventController::class,'destroy'])->name('events.destroy');
+Route::post('/admin/update-info', [AuthController::class, 'updateInfo'])->name('admin.updateInfo');
+Route::post('/admin/update-password', [AuthController::class, 'updatePassword'])->name('admin.updatePassword');
+Route::post('/admin/deleteAccount', [AuthController::class, 'deleteAccount'])->name('admin.deleteAccount');
 
 use App\Http\Controllers\ArtistController;
 Route::get('/artists', [ArtistController::class, 'index'])->name('artists.index'); // liste des artistes 
@@ -65,3 +74,8 @@ Route::post('/oeuvres/musique/store', [OeuvreMusiqueController::class, 'store'])
 use App\Http\Controllers\OeuvreNonMusiqueController;
 Route::get('/artists/{artist}/oeuvres/nonmusique/create', [OeuvreNonMusiqueController::class, 'create'])->name('oeuvres.nonmusiques.create');
 Route::post('/oeuvres/nonmusique/store', [OeuvreNonMusiqueController::class, 'store'])->name('oeuvres.nonmusiques.store');
+
+use App\Http\Controllers\EventController;
+Route::post('/events', [EventController::class, 'store'])->name('events.store');
+Route::put('/events/{id}', [EventController::class, 'update']);
+Route::delete('/events/{id}', [EventController::class, 'destroy']);

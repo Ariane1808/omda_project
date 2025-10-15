@@ -1,4 +1,7 @@
 <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+
+@include('includes.loader')
+
 <body>
     
 <style>
@@ -45,14 +48,16 @@
             <h2>Office Malagasy du Droit d'Auteur</h2>
             <h3>O M D A</h3>
         </div>
-        <ul>
-            <li><a href="/dashboard">Dashboard</a></li>
-            <li><a href="/artists">Gestion des artistes</a></li>
-            <li><a href="/oeuvres" class="active">Gestion des œuvres</a></li>
-            <li><a href="/admin">Administration</a></li>
-            <li><a href="/calendrier">Calendrier et Evenements</a></li>
-            <li><a href="/logout" class="logout">Se déconnecter</a></li>
-        </ul>
+    
+        <ul class="onglets">
+    
+            <li><a href="/dashboard"><img src="{{ asset('icons/monitoring_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Dashboard" width="24" height="24" alt=""> Dashboard</a></li>
+            <li><a href="/artists" ><img src="{{ asset('icons/artist_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Artistes" width="24" height="24"> Artistes</a></li>
+            <li><a href="/oeuvres" class="active"><img src="{{ asset('icons/speech_to_text_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Oeuvres" width="24" height="24">Oeuvres</a></li>
+            <li><a href="/admin"  ><img src="{{ asset('icons/admin_panel_settings_24dp_EFEFEF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Administration" width="24" height="24">Administration</a></li>
+            <li><a href="/logout" class="logout" id="logoutLink"><img src="{{ asset('icons/logout_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Logout" width="24" height="24">Se déconnecter</a></li>
+
+        
     </nav>
 
     {{-- notif pour modifications d'oeuvre --}}
@@ -120,7 +125,7 @@
         <tr>
             <th>Code titre</th>
             <th>Titre</th>
-            <th>Catégories</th>
+            <th>Numéro OMDA</th>
             @if ($categorie === 'LYR')
                 <th>Nom</th>
                 <th>Pseudo</th>
@@ -139,23 +144,35 @@
     </thead>
     <tbody>
         @foreach($oeuvres as $oeuvre)
-        <tr>
+       <tr>
             <td>{{ $oeuvre->code_titre}}</td>
             <td>{{ $oeuvre->titre }}</td>
-            <td>{{ $oeuvre->categorie }}</td>
+            <td><a href="{{ route('artists.show', $oeuvre->num) }}">{{ $oeuvre->num }}</a></td>
             @if ($oeuvre->categorie === 'LYR')
+                
                 <td>{{ $oeuvre->nom }}</td>
                 <td>{{ $oeuvre->pseudo }}</td>
-                <td>{{ $oeuvre->groupe}}</td>
+                <td>{{ $oeuvre->groupes}}</td>
                 <td>{{ $oeuvre->qualite }}</td>
                 <td>{{ $oeuvre->part }}</td>
                 <td>{{ $oeuvre->droit }}</td>
-                <td>{{ $oeuvre->Hologramme }}</td>
+                <td>{{ $oeuvre->hologramme }}</td>
             @else
+                
                 <td>{{ $oeuvre->auteur }}</td>
                 <td>{{ $oeuvre->part}}</td>
             @endif
             <td>{{ $oeuvre->date_depot }}</td>
+            <td>
+                <!-- modif -->
+                <a href="{{ route('oeuvres.edit', $oeuvre->code_titre) }}" style="padding:5px 10px; background:#007bff; color:white; border-radius:5px; text-decoration:none;">Modifier</a>
+                <!-- suppr -->
+                <form action="{{ route('oeuvres.destroy', $oeuvre->code_titre) }}" method="POST" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Voulez-vous vraiment supprimer cet oeuvre ?');">Supprimer</button>
+                </form>
+            </td>
         </tr>
         @endforeach
     </tbody>

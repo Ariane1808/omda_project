@@ -1,3 +1,5 @@
+@include('includes.loader')
+
 
 <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
 <style>
@@ -139,13 +141,11 @@
         </div>
         <ul class="onglets">
     
-            <li><a href="/dashboard">Dashboard</a></li>
-            <li><a href="/artists" class="active">Gestion des artistes</a></li>
-            <li><a href="/oeuvres">Gestion des œuvres</a></li>
-    
-                    <li><a href="/admin">Administration</a></li>
-            <li><a href="/calendrier">Calendrier et Evenements</a></li>
-            <li><a href="/logout" class="logout">Se déconnecter</a></li>
+            <li><a href="/dashboard"><img src="{{ asset('icons/monitoring_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Dashboard" width="24" height="24" alt=""> Dashboard</a></li>
+            <li><a href="/artists" class="active"><img src="{{ asset('icons/artist_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Artistes" width="24" height="24"> Artistes</a></li>
+            <li><a href="/oeuvres"><img src="{{ asset('icons/speech_to_text_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Oeuvres" width="24" height="24">Oeuvres</a></li>
+            <li><a href="/admin"  ><img src="{{ asset('icons/admin_panel_settings_24dp_EFEFEF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Administration" width="24" height="24">Administration</a></li>
+            <li><a href="/logout" class="logout" id="logoutLink"><img src="{{ asset('icons/logout_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Logout" width="24" height="24">Se déconnecter</a></li>
 
         </ul>
     </nav>

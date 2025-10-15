@@ -35,11 +35,85 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     z-index: 9999;
   }
+  th{
+    cursor: pointer;
+  }
+ /* .button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  width: 100%;
+  height: inherit;
+  border-radius: inherit;
+  background: linear-gradient( 82.3deg, rgba(150, 93, 233, 1) 10.8%, rgba(99, 88, 238, 1) 94.3% );
+  transition: all 0.475s;
+}
 
+.button {
+  margin: 20px auto;
+  position: relative;
+  overflow: hidden;
+  height: 3rem;
+  padding: 0 2rem;
+  border-radius: 1.5rem;
+  background: #3d3a4e;
+    background-size: auto;
+  background-size: 400%;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+} */
+.button {
+  position: relative;
+  overflow: hidden;
+  height: 3rem;
+  padding: 0 2rem;
+  border-radius: 1.5rem;
+  background: #3d3a4e;
+  background-size: 400%;
+ color: #3d3a4e;
+  border: none;
+  cursor: pointer;
+}
+.button:hover{
+    color: #fff;
+}
+.button:hover::before {
+  transform: scaleX(1);
+}
+
+.button-content {
+  position: relative;
+  z-index: 1;
+}
+
+.button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  width: 100%;
+  height: inherit;
+  border-radius: inherit;
+  background: linear-gradient(
+    82.3deg,
+    rgba(150, 93, 233, 1) 10.8%,
+    rgba(99, 88, 238, 1) 94.3%
+  );
+  transition: all 0.475s;
+}
 </style>
 
 <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
 <!-- <link rel="stylesheet" href="{{ asset('css/bycategory.css') }}"> -->
+
+@include('includes.loader')
+
 
 <body>
 <div class="container">
@@ -50,13 +124,11 @@
         </div>
         <ul class="onglets">
     
-            <li><a href="/dashboard">Dashboard</a></li>
-            <li><a href="/artists" class="active">Gestion des artistes</a></li>
-            <li><a href="/oeuvres">Gestion des œuvres</a></li>
-    
-                    <li><a href="/admin">Administration</a></li>
-            <li><a href="/calendrier">Calendrier et Evenements</a></li>
-            <li><a href="/logout" class="logout">Se déconnecter</a></li>
+            <li><a href="/dashboard"><img src="{{ asset('icons/monitoring_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Dashboard" width="24" height="24" alt=""> Dashboard</a></li>
+            <li><a href="/artists" class="active"><img src="{{ asset('icons/artist_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Artistes" width="24" height="24"> Artistes</a></li>
+            <li><a href="/oeuvres"><img src="{{ asset('icons/speech_to_text_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Oeuvres" width="24" height="24">Oeuvres</a></li>  
+            <li><a href="/admin"><img src="{{ asset('icons/admin_panel_settings_24dp_EFEFEF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Administration" width="24" height="24">Administration</a></li>
+            <li><a href="/logout" class="logout"><img src="{{ asset('icons/logout_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Logout" width="24" height="24">Se déconnecter</a></li>
 
         </ul>
     </nav>
@@ -84,10 +156,7 @@
 
         <!-- Recherche -->
         <form method="GET" action="{{ route('artists.byCategory', $categorie) }}" style="position: relative;">
-            <input type="text" id="searchInput" name="search" 
-                   value="{{ request('search') }}" 
-                   placeholder="Rechercher..." 
-                   style="padding:5px 10px; width:200px;">
+            <input type="text" id="searchInput" name="search" value="{{ request('search') }}" placeholder="Rechercher..." style="padding:5px 10px; width:200px;" class="input">
             <span id="clearSearch" style="cursor:pointer; border: 1px solid rgb(224, 214, 214); padding:3px 5px 5px ; position: absolute; background-color:rgb(197, 29, 29); color:#ccc">
                   &times;
             </span>
@@ -101,7 +170,7 @@
            
         </div>
         </div>
-        <button id="addBtn" style="padding:5px 10px; cursor:pointer;">Ajouter un artiste</button>
+        <button class="button" id="addBtn" style=" background-color: #e5e7eb;display: flex; align-items:center; gap: 10px; border-radius: 30px; padding:10px; border:none;box-shadow: -10px -10px 20px white, 10px 10px 20px rgb(153, 161, 175), inset -10px -10px 20px rgb(209, 213, 220);"><span class="button-content">Ajouter un artiste</span></button>
 
         <!-- Formulaire caché au départ -->
         <div id="addForm" style="display:none; margin-bottom: 20px; padding:10px; border:1px solid #ccc; border-radius:5px; background:#f9f9f9;">
@@ -125,7 +194,7 @@
                     <select name="categorie" id="">
                         <option value="LIT" @selected($categorie == 'LIT')>Littérature</option>
                         <option value="LYR" @selected($categorie == 'LYR')>Musique</option>
-                        <option value="DRAM" @selected($categorie == 'DRA')>Dramatique</option>
+                        <option value="DRA" @selected($categorie == 'DRA')>Dramatique</option>
                         <option value="AAV" @selected($categorie == 'AAV')>Audiovisuel</option>
                     </select>
 
@@ -165,7 +234,7 @@
                         <option value="TOLIARA">TOLIARA</option>
                      </select>
                 </div>
-                <div style="margin-bottom:5px;">
+                <div style="margin-bottom:5px; flex-direction: column;max-width: 200px;align-items: flex-start;">
                     <!-- <input type="text" name="sexe" required> -->
                      <label>Sexe :</label>
                      <input type="radio" name="sexe" value="H" id="homme" required>
@@ -202,7 +271,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center;">
         <h2>Artistes - {{ $categorie }}</h2>
 
-        <div style="margin-top: 15px; display:flex; align-items:center; gap:10px;">
+        <div style="margin-top: 15px; display:flex; align-items:center; gap:10px; flex-direction:column-reverse;">
        
        {{-- pagination --}}
             {{ $artists->links() }}
@@ -218,47 +287,47 @@
 <table class="artist-table" id="artistTable">
      <thead>
                     <tr>
-                        <th>
-                            <a href="{{ route('artists.byCategory', ['categorie' => $categorie, 'sort' => 'num', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">
+                        <th data-href="{{ route('artists.byCategory', ['categorie' => $categorie, 'sort' => 'num', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">
+                            {{-- <a href="{{ route('artists.byCategory', ['categorie' => $categorie, 'sort' => 'num', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}"> --}}
                                 Num
                                 @if($sort === 'num')
                                     {{ $order === 'asc' ? '▲' : '▼' }}
                                 @endif
-                            </a>
+                            {{-- </a> --}}
                         </th>
-                        <th>
-                            <a href="{{ route('artists.byCategory', ['categorie' => $categorie, 'sort' => 'nom', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">
+                        <th data-href="{{ route('artists.byCategory', ['categorie' => $categorie, 'sort' => 'nom', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">
+                            {{-- <a href="{{ route('artists.byCategory', ['categorie' => $categorie, 'sort' => 'nom', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}"> --}}
                                 Nom
                                 @if($sort === 'nom')
                                     {{ $order === 'asc' ? '▲' : '▼' }}
                                 @endif
-                            </a>
+                            {{-- </a> --}}
                         </th>
-                        <th>
-                            <a href="{{ route('artists.byCategory', ['categorie' => $categorie, 'sort' => 'pseudo', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">
+                        <th data-href="{{ route('artists.byCategory', ['categorie' => $categorie, 'sort' => 'pseudo', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">
+                            {{-- <a href="{{ route('artists.byCategory', ['categorie' => $categorie, 'sort' => 'pseudo', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}"> --}}
                                 Pseudo
                                 @if($sort === 'pseudo')
                                     {{ $order === 'asc' ? '▲' : '▼' }}
                                 @endif
-                            </a>
+                            {{-- </a> --}}
                         </th>
-                        <th>
-                            <a href="{{ route('artists.byCategory', ['categorie' => $categorie, 'sort' => 'date_naissance', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">
+                        <th data-href="{{ route('artists.byCategory', ['categorie' => $categorie, 'sort' => 'date_naissance', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">
+                            {{-- <a href="{{ route('artists.byCategory', ['categorie' => $categorie, 'sort' => 'date_naissance', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}"> --}}
                                 Date de naissance
                                 @if($sort === 'date_naissance')
                                     {{ $order === 'asc' ? '▲' : '▼' }}
                                 @endif
-                            </a>
+                            {{-- </a> --}}
                         </th>
-                        <th>
-                            <a href="{{ route('artists.byCategory', ['categorie' => $categorie, 'sort' => 'contact', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">
+                        <th data-href="{{ route('artists.byCategory', ['categorie' => $categorie, 'sort' => 'contact', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">
+                            {{-- <a href="{{ route('artists.byCategory', ['categorie' => $categorie, 'sort' => 'contact', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}"> --}}
                                 Contact
                                 @if($sort === 'contact')
                                     {{ $order === 'asc' ? '▲' : '▼' }}
                                 @endif
-                            </a>
+                            {{-- </a> --}}
                         </th>
-                        <th>Action</th>
+                        <td>Action</td>
                     </tr>
                 </thead>
     <tbody>
@@ -298,7 +367,7 @@
     </tbody>
 </table>
 
-<div style="margin-top: 15px; display:flex; align-items:center; gap:10px;">
+<div style="margin-top: 15px; display:flex; align-items:center; gap:10px;  flex-direction:column-reverse;">
        
        {{-- pagination --}}
         {{ $artists->links() }}
@@ -337,6 +406,18 @@
     });
   });
 });
+
+ document.addEventListener('DOMContentLoaded', function () {
+  // navigation par clic sur la ligne, sauf si on clique un bouton/lien/champ
+  document.querySelectorAll('#artistTable thead tr th').forEach(tr => {
+    tr.addEventListener('click', function(e) {
+      if (e.target.closest('button, a, input, .no-row-nav')) return; // on ignore
+     window.location = this.dataset.href;
+
+    });
+  });
+});
+
     const addBtn = document.getElementById('addBtn');
     const addForm = document.getElementById('addForm');
     const artistTable = document.getElementById('artistTable');

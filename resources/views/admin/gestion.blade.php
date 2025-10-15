@@ -125,12 +125,88 @@ aside h3.username {
 .link a:hover::after {
     left: 0;
 }
-.sidebar img {
-    filter: invert(1); /* rend les icônes blanches sur fond sombre */
-}
+
+
+.gestion-container {
+            margin: 50px auto;
+            max-width: 800px;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        .btn-choice {
+            padding: 12px 25px;
+            margin: 10px;
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .btn-choice:hover { background: #1d4ed8; }
+
+        .sub-choice {
+            margin-top: 20px;
+        }
+
+        form {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        button[type="submit"], .btn-ok {
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button[type="submit"]:hover, .btn-ok:hover { background: #15803d; }
+
+        .danger-zone {
+            border: 2px solid red;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+
+        .danger-zone button {
+            background: red;
+        }
+
+        .hidden { display: none; }
 
      </style>
 </head>
+
+@include('includes.loader')
+
 <body>
    
 
@@ -143,13 +219,11 @@ aside h3.username {
         </div>
         <ul class="onglets">
     
-            <li><a href="/dashboard"><img src="{{ asset('icons/analytique.png') }}" alt="Dashboard" style="width: 15px; margin-right:8px;">Dashboard</a></li>
-            <li><a href="/artists"><img src="{{ asset('icons/artiste.png') }}" alt="Dashboard" style="width: 15px; margin-right:8px;">Gestion des artistes</a></li>
-            <li><a href="/oeuvres"><img src="{{ asset('icons/chef-doeuvre.png') }}" alt="Dashboard" style="width: 15px; margin-right:8px;">Gestion des œuvres</a></li>
-    
-            <li><a href="/admin" class="active"><img src="{{ asset('icons/administrateur.png') }}" alt="Dashboard" style="width: 15px; margin-right:8px;">Administration</a></li>
-            <li><a href="/calendrier"><img src="{{ asset('icons/calendrier.png') }}" alt="Dashboard" style="width: 15px; margin-right:8px;">Calendrier et Evenements</a></li>
-            <li><a href="/logout" class="logout" id="logoutLink"><img src="{{ asset('icons/se-deconnecter.png') }}" alt="Dashboard" style="width: 20px; margin-right:8px;">Se déconnecter</a></li>
+            <li><a href="/dashboard"><img src="{{ asset('icons/monitoring_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Dashboard" width="24" height="24" alt=""> Dashboard</a></li>
+            <li><a href="/artists" ><img src="{{ asset('icons/artist_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Artistes" width="24" height="24"> Artistes</a></li>
+            <li><a href="/oeuvres"><img src="{{ asset('icons/speech_to_text_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Oeuvres" width="24" height="24">Oeuvres</a></li>
+            <li><a href="/admin"  class="active"><img src="{{ asset('icons/admin_panel_settings_24dp_EFEFEF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Administration" width="24" height="24">Administration</a></li>
+            <li><a href="/logout" class="logout" id="logoutLink"><img src="{{ asset('icons/logout_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Logout" width="24" height="24">Se déconnecter</a></li>
 
         </ul>
     </nav>
@@ -160,33 +234,193 @@ aside h3.username {
  <h1>Votre centre de contrôle de vos informations </h1>
 
 
-<div class="link" style="width: 50%; margin: auto; padding: 30px;">
+
+
+
+
+<div class="gestion-container">
+    <h2>⚙️ Gestion du compte</h2>
+
+    {{-- ✅ Messages de succès ou d’erreur --}}
+    @if(session('success'))
+        <p style="color: green;">{{ session('success') }}</p>
+    @endif
+    @if(session('error'))
+        <p style="color: red;">{{ session('error') }}</p>
+    @endif
+
+    {{-- === PREMIER CHOIX : MODIFICATION OU SUPPRESSION === --}}
+    <div id="firstChoice">
+        
+        <div class="link" style="width: 50%; margin: auto; padding: 30px;">
             <ul>
                 <li>
-                    <a href="" id="modifier">  {{--ETO NO MANAMBOTRA--}}
+                    <a  id="btnModify">  {{--ETO NO MANAMBOTRA--}}
                         Modification des informations
                     </a>
                 </li>
 
               
                 <li>
-                    <a href="" id="suppression">  {{--ETO NO MANAMBOTRA--}}
+                    <a  id="btnDelete">  {{--ETO NO MANAMBOTRA--}}
                         Suppression du compte
                     </a>
                 </li>
             </ul>
         </div>
+    </div>
+
+    {{-- === SOUS-CHOIX : MODIFIER LE PROFIL OU MOT DE PASSE === --}}
+    <div id="modifyChoice" class="sub-choice hidden">
+        <button class="btn-choice" id="btnProfil">✏️ Modifier le profil</button>
+        <button class="btn-choice" id="btnPassword">🔑 Modifier le mot de passe</button>
+    </div>
+
+    {{-- === FORMULAIRE : MODIFIER LE PROFIL === --}}
+    <form id="formProfil" action="{{ route('admin.updateInfo') }}" method="POST" class="hidden">
+        @csrf
+        <div class="form-group">
+            <label>Nom d'utilisateur</label>
+            <input type="text" name="username" value="{{ $admin->username }}" required>
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" value="{{ $admin->email }}" required>
+        </div>
+        <div class="form-group">
+            <label>Adresse</label>
+            <input type="text" name="adresse" value="{{ $admin->adresse }}" required>
+        </div>
+        <div class="form-group">
+            <label>Téléphone</label>
+            <input type="text" name="telephone" value="{{ $admin->telephone }}" required>
+        </div>
+
+        <button type="button" class="btn-ok" id="okProfil">OK</button>
+
+        <div id="confirmProfil" class="hidden">
+            <div class="form-group">
+                <label>Mot de passe actuel</label>
+                <input type="password" name="current_password" required>
+            </div>
+            <button type="submit">Confirmer la modification</button>
+        </div>
+    </form>
+
+    {{-- === FORMULAIRE : MODIFIER LE MOT DE PASSE === --}}
+    <!-- 🔹 FORMULAIRE : MODIFIER LE MOT DE PASSE -->
+<form id="formPassword" action="{{ route('admin.updatePassword') }}" method="POST" class="hidden">
+    @csrf
+    <div class="form-group">
+        <label>Ancien mot de passe</label>
+        <input type="password" name="old_password" required>
+    </div>
+    <div class="form-group">
+        <label>Nouveau mot de passe</label>
+        <input type="password" name="new_password" required>
+    </div>
+    <div class="form-group">
+        <label>Confirmer le nouveau mot de passe</label>
+        <input type="password" name="new_password_confirmation" required>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <button type="submit">Modifier le mot de passe</button>
+        <a href="#" id="forgotPasswordLink" style="color:#2563eb; text-decoration:underline; font-size:0.9rem;">
+            Mot de passe oublié ?
+        </a>
+    </div>
+
+    <p id="forgotMessage" class="hidden" style="color:red; font-weight:500; margin-top:10px;">
+        🔒 Modification réservée à Mr Mamy ou au Directeur.
+    </p>
+</form>
 
 
-
+    {{-- === FORMULAIRE : SUPPRESSION DU COMPTE === --}}
+    <div id="deleteAccount" class="danger-zone hidden">
+        <h3>🗑️ Supprimer le compte</h3>
+        <p style="color:red;">Cette action est irréversible. Veuillez confirmer votre mot de passe.</p>
+        <form action="{{ route('admin.deleteAccount') }}" method="POST">
+            @csrf
+            <div class="form-group">
+                <label>Mot de passe actuel</label>
+                <input type="password" name="password" required>
+            </div>
+            <button type="submit">Supprimer mon compte</button>
+        </form>
+    </div>
+</div>
 
 
 
 <script>
+      const btnModify = document.getElementById('btnModify');
+    const btnDelete = document.getElementById('btnDelete');
+    const modifyChoice = document.getElementById('modifyChoice');
+    const deleteAccount = document.getElementById('deleteAccount');
+    const firstChoice = document.getElementById('firstChoice');
+
+    const btnProfil = document.getElementById('btnProfil');
+    const btnPassword = document.getElementById('btnPassword');
+    const formProfil = document.getElementById('formProfil');
+    const formPassword = document.getElementById('formPassword');
+    const okProfil = document.getElementById('okProfil');
+    const confirmProfil = document.getElementById('confirmProfil');
+
+    // 🔹 Étape 1 : Choisir Modification ou Suppression
+    btnModify.addEventListener('click', () => {
+        firstChoice.classList.add('hidden');
+        modifyChoice.classList.remove('hidden');
+    });
+
+    btnDelete.addEventListener('click', () => {
+        firstChoice.classList.add('hidden');
+        deleteAccount.classList.remove('hidden');
+    });
+
+    // 🔹 Étape 2 : Choisir quel type de modification
+    btnProfil.addEventListener('click', () => {
+        modifyChoice.classList.add('hidden');
+        formProfil.classList.remove('hidden');
+    });
+
+    btnPassword.addEventListener('click', () => {
+        modifyChoice.classList.add('hidden');
+        formPassword.classList.remove('hidden');
+    });
+
+    // 🔹 Étape 3 : Afficher la confirmation du mot de passe après “OK”
+    okProfil.addEventListener('click', () => {
+        okProfil.style.display = 'none';
+        confirmProfil.classList.remove('hidden');
+    });
+    // 🔹 Lien "mot de passe oublié"
+const forgotLink = document.getElementById('forgotPasswordLink');
+const forgotMessage = document.getElementById('forgotMessage');
+
+forgotLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    forgotMessage.classList.toggle('hidden');
+});
     const modal = document.getElementById('adminModal');
     const openBtn = document.getElementById('openModal');
     const closeBtn = document.getElementById('closeModal');
+//     const btnModify = document.getElementById('btnModify');
+//     const btnDelete = document.getElementById('btnDelete');
+//     const modifyChoice = document.getElementById('modifyChoice');
+//     const deleteAccount = document.getElementById('deleteAccount');
+//     const firstChoice = document.getElementById('firstChoice');
+//     const btnProfil = document.getElementById('btnProfil');
+//     const btnPassword = document.getElementById('btnPassword');
+//     const formProfil = document.getElementById('formProfil');
+//     const formPassword = document.getElementById('formPassword');
+//     const okProfil = document.getElementById('okProfil');
+//     const confirmProfil = document.getElementById('confirmProfil');
+
+
    
+
     openBtn.addEventListener('click', () => {
         modal.style.display = 'flex';
     });
@@ -215,7 +449,6 @@ aside h3.username {
         });
     }
 });
-
 
 </script>
 </div>

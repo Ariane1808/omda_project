@@ -100,8 +100,44 @@
     .card-content button:hover {
       background: #2980b9;
     }
+
+    /* Derniers oeuvres */
+    .recent-oeuvre {
+      background: #f8f9fa;
+      padding: 20px;
+      margin-top: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .recent-oeuvre h2 {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .recent-oeuvre ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .recent-oeuvre li {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      font-size: 1rem;
+    }
+
+    .recent-oeuvre li:last-child {
+      border-bottom: none;
+    }
+    
     </style>
 </head>
+
+@include('includes.loader')
+
+
 <body>
 <div class="container">
     <nav class="sidebar">
@@ -109,13 +145,14 @@
             <h2>Office Malagasy du Droit d'Auteur</h2>
             <h3>O M D A</h3>
         </div>
-        <ul>
-            <li><a href="/dashboard">Dashboard</a></li>
-            <li><a href="/artists">Gestion des artistes</a></li>
-            <li><a href="/oeuvres" class="active">Gestion des œuvres</a></li>
-            <li><a href="/admin">Administration</a></li>
-            <li><a href="/calendrier">Calendrier et Evenements</a></li>
-            <li><a href="/logout" class="logout">Se déconnecter</a></li>
+        <ul class="onglets">
+    
+            <li><a href="/dashboard"><img src="{{ asset('icons/monitoring_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Dashboard" width="24" height="24" alt=""> Dashboard</a></li>
+            <li><a href="/artists" ><img src="{{ asset('icons/artist_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Artistes" width="24" height="24"> Artistes</a></li>
+            <li><a href="/oeuvres" class="active"><img src="{{ asset('icons/speech_to_text_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Oeuvres" width="24" height="24">Oeuvres</a></li>
+            <li><a href="/admin"  ><img src="{{ asset('icons/admin_panel_settings_24dp_EFEFEF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Administration" width="24" height="24">Administration</a></li>
+            <li><a href="/logout" class="logout" id="logoutLink"><img src="{{ asset('icons/logout_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Logout" width="24" height="24">Se déconnecter</a></li>
+
         </ul>
     </nav>
 
@@ -155,6 +192,26 @@
             </div>
         </div>
     </div>
+    
+    <div class="recent-oeuvre">
+      <h2>🎤 Derniers oeuvres ajoutés</h2>
+      <ul>
+        @foreach($recentOeuvres as $oeuvres)
+          <li>
+            @if ($oeuvres->categorie === 'LYR')
+                <strong>{{ $oeuvres->nom}} ({{ $oeuvres->pseudo }})</strong>
+                ({{ $oeuvres->categorie }}) - <em>{{ $oeuvres->titre}}</em> 
+                <em>{{ $oeuvres->date_depot }}</em>
+            @else
+                <strong>{{ $oeuvres->auteur }}</strong> 
+                ({{ $oeuvres->categories }}) - <em>{{ $oeuvres->titre}}</em> 
+                <em>{{ $oeuvres->date_depot }}</em>
+            @endif
+          </li>
+        @endforeach
+      </ul>
+    </div>
+
 </div>
 </div>
 <script>
