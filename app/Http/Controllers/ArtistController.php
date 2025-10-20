@@ -128,9 +128,9 @@ if (!session()->has('admin_id')) {
 
     ActivityLog::create([
         'user_id' => session('admin_id'),
-        'action' => 'ajouté',
-        'model' => 'Artiste',
-        'details' => 'Nouvel artiste ajouté : ' . $request->nom,
+        'action' => 'a ajouté',
+        'model_type' => 'l\'artiste',
+        'details' => $request->nom,
     ]);
 
     // Vérifie si l’insertion a réussi
@@ -162,9 +162,9 @@ if (!session()->has('admin_id')) {
 
         ActivityLog::create([
     'user_id' => session('admin_id'),
-    'action' => 'modifié',
-    'model' => 'Artiste',
-    'details' => 'Modification de l\'artiste ' . $request->nom,
+    'action' => 'a modifié',
+    'model_type' => 'l\' artiste',
+    'details' => $request->nom,
 ]);
 
   
@@ -182,9 +182,9 @@ if (!session()->has('admin_id')) {
 
         ActivityLog::create([
     'user_id' => session('admin_id'),
-    'action' => 'supprimé',
-    'model' => 'Artiste',
-    'details' => 'Suppression de l\'artiste ' . $artist->nom,
+    'action' => 'a supprimé',
+    'model_type' => 'l\'artiste',
+    'details' => $artist->nom,
 ]);
 
         $artist->delete();

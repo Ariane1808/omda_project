@@ -332,22 +332,72 @@ table a {
 }
 
 table a {
-    background-color: #2563eb;
+    background-color: #4366a1;
 }
 
 table a:hover {
-    background-color: #1d4ed8;
+    background-color: #324a75;
 }
 
 table .btn-danger {
-    background-color: #ef4444;
+    background-color: #3660a8
 }
 
 table .btn-danger:hover {
     background-color: #dc2626;
 }
 
+    .button {
+        min-width: 100px;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        height: 3rem;
+        padding: 0 2rem;
+        border-radius: 1.5rem;
+        /* background: #3d3a4e; */
+        background-size: 400%;
+        color: #3d3a4e;
+        border: none;
+        cursor: pointer;
+        background-color: #e5e7eb;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 30px;
+        padding: 10px;
+        border: none;
+        box-shadow: -10px -10px 20px white, 10px 10px 20px rgb(153, 161, 175), inset -10px -10px 20px rgb(209, 213, 220);
+    }
 
+    .button:hover {
+        color: #fff;
+    }
+
+    .button:hover::before {
+        transform: scaleX(1);
+    }
+
+    .button-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .button::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform: scaleX(0);
+        transform-origin: 0 50%;
+        width: 100%;
+        height: inherit;
+        border-radius: inherit;
+        background: linear-gradient(82.3deg,
+                rgba(150, 93, 233, 1) 10.8%,
+                rgba(99, 88, 238, 1) 94.3%);
+        transition: all 0.475s;
+    }
 
 
 /* Pagination */
@@ -426,6 +476,7 @@ table .btn-danger:hover {
     .main-conteneur {
         padding: 20px;
         margin-left: 260px;
+        overflow: auto;
     }
 
     .sidebar {

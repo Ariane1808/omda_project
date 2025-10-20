@@ -10,6 +10,7 @@ use App\Models\OeuvresNonMusique;
 use App\Models\Event;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 use App\Models\ActivityLog;
 
@@ -23,22 +24,53 @@ class AuthController extends Controller
 
     // Traiter la connexion
     public function login(Request $request)
-    {
-        $request->validate([
-            'username' => 'required',
-            'password' => 'required'
-        ]);
+{
+    $request->validate([
+        'username' => 'required',
+        'password' => 'required',
+    ]);
 
-        $admin = Admin::where('username', $request->username)->first();
+    $admin = Admin::where('username', $request->username)->first();
 
-        // Vérifier mot de passe
-        if ($admin && Hash::check($request->password, $admin->password)) {
-            session(['admin_id' => $admin->id, 'username' => $admin->username]);
-            return redirect('/dashboard');
-        }
-
-        return back()->withErrors(['username' => 'Identifiant ou mot de passe incorrect']);
+    if (!$admin || !Hash::check($request->password, $admin->password)) {
+        return back()->withErrors(['username' => 'Nom d\'utilisateur ou mot de passe incorrect']);
     }
+
+    // 🔒 Vérifier si une session est déjà active
+    if ($admin->session_id && $admin->session_id !== Session::getId()) {
+        return back()->withErrors(['username' => 'Compte déjà connecté sur un autre appareil']);
+    }
+
+    // ✅ Connexion autorisée → enregistrer la session
+    session([
+        'admin_id' => $admin->id,
+        'username' => $admin->username,
+        'role' => $admin->role,
+    ]);
+
+    // 🔁 Mettre à jour le session_id
+    $admin->update(['session_id' => Session::getId()]);
+
+      ActivityLog::create([
+    'user_id' => session('admin_id'),
+    'action' => 's\'est connécté',
+    'model_type' => 'en tant qu\'admin :',
+    'details' => 'Connection de ' . $admin->username,
+    ]);
+
+    $admin = Admin::find(session('admin_id'));
+if ($admin && $admin->last_activity) {
+    if (now()->diffInSeconds($admin->last_activity) > 5) {
+        // Supprimer la session expirée
+        $admin->update(['session_id' => null]);
+        session()->forget('admin_id');
+        return redirect('/login')->with('error', 'Session expirée. Veuillez vous reconnecter.');
+    }
+}
+
+
+    return redirect('/dashboard');
+}
 
     // Afficher le dashboard
     public function dashboard()
@@ -152,13 +184,29 @@ for ($i = 1; $i <= 12; $i++) {
     $mergedOeuvres[$i] = ($oeuvresByMonth[$i] ?? 0) + ($oeuvresByMonthNon[$i] ?? 0);
 }
 
-        return view('dashboard', compact('totalArtists','artistsByCategory','totalOeuvres','oeuvresByCategory','artistsThisYear','oeuvresThisYear','moyenneOeuvresParArtiste','topArtist','adhesionsByMonth','mergedOeuvres'))->with('username', session('username'));
+
+
+    // Récupère les 5 événements les plus récents
+    $evenementsRecents = Event::orderBy('created_at', 'desc')->take(3)->get();
+
+    $admins = Admin::all(); // Ajuste selon ton modèle
+    $activities = ActivityLog::latest()->take(3)->get(); //  dernière action
+
+
+
+        return view('dashboard', compact('totalArtists','artistsByCategory','totalOeuvres','oeuvresByCategory','artistsThisYear','oeuvresThisYear','moyenneOeuvresParArtiste','topArtist','adhesionsByMonth','mergedOeuvres','evenementsRecents','activities'))->with('username', session('username'));
 
     }
 
     // Déconnexion
     public function logout()
     {
+        $admin = Admin::find(session('admin_id'));
+
+         if ($admin) {
+        $admin->update(['session_id' => null]);
+    }
+
         session()->flush();
         return redirect('/login');
     }
@@ -215,6 +263,8 @@ for ($i = 1; $i <= 12; $i++) {
 
     public function store(Request $request)
     {
+        
+
    $request->validate([
         'username'  => 'required|string|max:255|unique:admin,username',
         'email'     => 'required|email|unique:admin,email',

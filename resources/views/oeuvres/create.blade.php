@@ -1,222 +1,274 @@
-
-
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajout Oeuvre</title>
 
-<link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
-<style>
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <style>
+        /* ----- FORMULAIRE ----- */
+        .main-conteneur form {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 25px 30px;
+            max-width: 700px;
+            margin: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
 
-/* ----- FORMULAIRE ----- */
-.main-conteneur form {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 25px 30px;
-    max-width: 700px;
-    margin: auto;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
+        /* Champs */
+        .main-conteneur form div {
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+        }
 
-/* Champs */
-.main-conteneur form div {
-    margin-bottom: 12px;
-    display: flex;
-    flex-direction: column;
-}
+        .main-conteneur form label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #1f2937;
+        }
 
-.main-conteneur form label {
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin-bottom: 5px;
-    color: #1f2937;
-}
+        .main-conteneur form input[type="text"],
+        .main-conteneur form input[type="date"],
+        .main-conteneur form select {
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 0.9rem;
+            background: #f9fafb;
+            transition: border 0.3s, background 0.3s;
+        }
 
-.main-conteneur form input[type="text"],
-.main-conteneur form input[type="date"],
-.main-conteneur form select {
-    padding: 8px 10px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    font-size: 0.9rem;
-    background: #f9fafb;
-    transition: border 0.3s, background 0.3s;
-}
+        .main-conteneur form input:focus,
+        .main-conteneur form select:focus {
+            border-color: #2563eb;
+            background: #ffffff;
+            outline: none;
+        }
 
-.main-conteneur form input:focus,
-.main-conteneur form select:focus {
-    border-color: #2563eb;
-    background: #ffffff;
-    outline: none;
-}
+        /* Radios */
+        .main-conteneur form input[type="radio"] {
+            margin-right: 5px;
+            transform: scale(0.9);
+        }
 
-/* Radios */
-.main-conteneur form input[type="radio"] {
-    margin-right: 5px;
-    transform: scale(0.9);
-}
+        .main-conteneur form label[for="homme"],
+        .main-conteneur form label[for="femme"] {
+            font-weight: 500;
+            margin-right: 15px;
+            display: inline-flex;
+            align-items: center;
+        }
 
-.main-conteneur form label[for="homme"],
-.main-conteneur form label[for="femme"] {
-    font-weight: 500;
-    margin-right: 15px;
-    display: inline-flex;
-    align-items: center;
-}
+        /* ----- BOUTONS STYLE UIVERSE ----- */
+        .main-conteneur form .btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 28px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-radius: 10px;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.25s ease;
+        }
 
-/* ----- BOUTONS STYLE UIVERSE ----- */
-.main-conteneur form .btn {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 28px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    border-radius: 10px;
-    cursor: pointer;
-    border: none;
-    text-decoration: none;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.25s ease;
-}
+        /* Effet vague animé Uiverse */
+        .main-conteneur form .btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.15);
+            transform: skewX(-20deg);
+            transition: left 0.5s ease;
+        }
 
-/* Effet vague animé Uiverse */
-.main-conteneur form .btn::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 200%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.15);
-    transform: skewX(-20deg);
-    transition: left 0.5s ease;
-}
+        .main-conteneur form .btn:hover::before {
+            left: 100%;
+        }
 
-.main-conteneur form .btn:hover::before {
-    left: 100%;
-}
+        /* Bouton Enregistrer */
+        .main-conteneur form .btn-save {
+            background: #1e3a8a;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+        }
 
-/* Bouton Enregistrer */
-.main-conteneur form .btn-save {
-    background: #1e3a8a;
-    color: #fff;
-    box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
-}
+        .main-conteneur form .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(29, 78, 216, 0.4);
+        }
 
-.main-conteneur form .btn-save:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(29, 78, 216, 0.4);
-}
+        /* Bouton Annuler */
+        .main-conteneur form .btn-cancel {
+            background: #6b7280;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(107, 114, 128, 0.3);
+        }
 
-/* Bouton Annuler */
-.main-conteneur form .btn-cancel {
-    background: #6b7280;
-    color: #fff;
-    box-shadow: 0 4px 10px rgba(107, 114, 128, 0.3);
-}
+        .main-conteneur form .btn-cancel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(75, 85, 99, 0.4);
+        }
 
-.main-conteneur form .btn-cancel:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(75, 85, 99, 0.4);
-}
+        .button {
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            height: 3rem;
+            padding: 0 2rem;
+            border-radius: 1.5rem;
+            background: #3d3a4e;
+            background-color: #e5e7eb;
+            background-size: auto;
+            background-size: 400%;
+            color: #4b4b4b;
+            border: none;
+            cursor: pointer;
+            box-shadow: -10px -10px 20px white, 10px 10px 20px rgb(153, 161, 175), inset -10px -10px 20px rgb(209, 213, 220);
 
-/* ----- RESPONSIVE ----- */
-@media (max-width: 768px) {
-    .main-conteneur {
-        margin-left: 0;
-        padding: 20px;
-    }
+        }
 
-    .main-conteneur form {
-        padding: 20px;
-        max-width: 100%;
-    }
-}
+        .button:hover {
+            color: white;
+        }
 
+        .button:hover::before {
+            transform: scaleX(1);
+        }
 
-</style>
+        .button-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: scaleX(0);
+            transform-origin: 0 50%;
+            width: 100%;
+            height: inherit;
+            border-radius: inherit;
+            background: linear-gradient(82.3deg,
+                    rgba(150, 93, 233, 1) 10.8%,
+                    rgba(99, 88, 238, 1) 94.3%);
+            transition: all 0.475s;
+        }
+
+        /* ----- RESPONSIVE ----- */
+        @media (max-width: 768px) {
+            .main-conteneur {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .main-conteneur form {
+                padding: 20px;
+                max-width: 100%;
+            }
+        }
+    </style>
 </head>
 
 @include('includes.loader')
 
 <body>
 
-<div class="container">
-  <nav class="sidebar">
-    <div class="logo">
-      <h2>Office Malagasy du Droit d'Auteur</h2>
-      <h3>O.M.D.A</h3>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="logo">
+                <h2>Office Malagasy du Droit d'Auteur</h2>
+                <h3>O.M.D.A</h3>
+            </div>
+            <ul class="onglets">
+
+                <li><a href="/dashboard"><img
+                            src="{{ asset('icons/monitoring_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}"
+                            alt="Dashboard" width="24" height="24" alt=""> Dashboard</a></li>
+                <li><a href="/artists"><img src="{{ asset('icons/artist_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}"
+                            alt="Artistes" width="24" height="24"> Artistes</a></li>
+                <li><a href="/oeuvres" class="active"><img
+                            src="{{ asset('icons/speech_to_text_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}"
+                            alt="Oeuvres" width="24" height="24">Oeuvres</a></li>
+                <li><a href="/admin"><img
+                            src="{{ asset('icons/admin_panel_settings_24dp_EFEFEF_FILL0_wght400_GRAD0_opsz24.png') }}"
+                            alt="Administration" width="24" height="24">Administration</a></li>
+                <li><a href="/logout" class="logout" id="logoutLink"><img
+                            src="{{ asset('icons/logout_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Logout"
+                            width="24" height="24">Se déconnecter</a></li>
+
+            </ul>
+        </nav>
+
+
+        <div class="main-conteneur">
+            @if ($artist->categorie === 'LYR')
+                <form action="{{ route('oeuvres.store') }}" method="post">
+                    @csrf
+                    <input type="hidden" name="type" value="musique">
+                    <label for="">Date depôt: </label>
+                    <input type="date" name="date_depot" required><br><br>
+                    <label for="">Code titre:</label>
+                    <input type="text" name="code_titre"><br><br>
+                    <label for="">Titre: </label>
+                    <input type="text" name="titre" required><br><br>
+                    <label for="">Catégorie: </label>
+                    <input type="text" name="categories" value="{{ $artist->categorie }}"><br><br>
+                    <label for="">Numéro OMDA:</label>
+                    <input type="text" name="num" value="{{ $artist->num }}"><br><br>
+                    <label for="">Nom: </label>
+                    <input type="text" name="nom" value="{{ $artist->nom }}"><br><br>
+                    <label for="">Pseudo:</label>
+                    <input type="text" name="pseudo" value="{{ $artist->pseudo }}"><br><br>
+                    <label for="">Groupes:</label>
+                    <input type="text" name="groupes" value="{{ $artist->groupes }}"><br><br>
+                    <label for="">Qualité: </label>
+                    <input type="text" name="qualite"><br><br>
+                    <label for="">Droit: </label>
+                    <input type="text" name="droit"><br><br>
+                    <label for="">Part:</label>
+                    <input type="text" name="part"><br><br>
+                    <label for="">Hologramme:</label>
+                    <input type="text" name="hologramme"><br><br>
+                    <button class="button"><span class="button-content">Ajouter une oeuvre</span></button>
+                </form>
+            @else
+                <form action="{{ route('oeuvres.store') }}" method="post">
+                    @csrf
+
+                    <label for="">Date depôt: </label>
+                    <input type="date" name="date_depot" required><br><br>
+                    <label for="">Code titre:</label>
+                    <input type="text" name="code_titre"><br><br>
+                    <label for="">Titre: </label>
+                    <input type="text" name="titre" required><br><br>
+                    <label for="">Catégorie: </label>
+                    <input type="text" name="categories" value="{{ $artist->categorie }}"><br><br>
+                    <label for="">Numéro OMDA:</label>
+                    <input type="text" name="num" value="{{ $artist->num }}"><br><br>
+                    <label for="">Auteur:</label>
+                    <input type="text" name="auteur" value="{{ $artist->nom }}"><br><br>
+                    <label for="">Part:</label>
+                    <input type="text" name="part"><br><br>
+                    <button class="button"><span class="button-content">Ajouter une oeuvre</span></button>
+                </form>
+            @endif
+        </div>
     </div>
-    <ul class="onglets">
-    
-            <li><a href="/dashboard"><img src="{{ asset('icons/monitoring_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Dashboard" width="24" height="24" alt=""> Dashboard</a></li>
-            <li><a href="/artists" ><img src="{{ asset('icons/artist_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Artistes" width="24" height="24"> Artistes</a></li>
-            <li><a href="/oeuvres" class="active"><img src="{{ asset('icons/speech_to_text_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Oeuvres" width="24" height="24">Oeuvres</a></li>
-            <li><a href="/admin"  ><img src="{{ asset('icons/admin_panel_settings_24dp_EFEFEF_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Administration" width="24" height="24">Administration</a></li>
-            <li><a href="/calendrier"><img src="{{ asset('icons/calendar_month_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Calendrier" width="24" height="24">Calendrier et Evenements</a></li>
-            <li><a href="/logout" class="logout" id="logoutLink"><img src="{{ asset('icons/logout_24dp_D9D9D9_FILL0_wght400_GRAD0_opsz24.png') }}" alt="Logout" width="24" height="24">Se déconnecter</a></li>
-
-        </ul>
-  </nav>
-
-
-   <div class="main-conteneur">
-@if ($artist->categorie === 'LYR')
-    <form action="{{route('oeuvres.store')}}" method="post">
-    @csrf
-    <input type="hidden" name="type" value="musique">
-    <label for="">Date depôt: </label>
-    <input type="date" name="date_depot" required><br><br>
-    <label for="">Code titre:</label>
-    <input type="text" name="code_titre"><br><br>
-    <label for="">Titre: </label>
-    <input type="text" name="titre" required><br><br>
-    <label for="">Catégorie: </label>
-    <input type="text" name="categories" value="{{ $artist->categorie }}"><br><br>
-    <label for="">Numéro OMDA:</label>
-    <input type="text" name="num" value="{{ $artist->num }}"><br><br>
-    <label for="">Nom: </label>
-    <input type="text" name="nom" value="{{ $artist->nom }}"><br><br> 
-    <label for="">Pseudo:</label>
-    <input type="text" name="pseudo" value="{{ $artist->pseudo }}"><br><br>
-    <label for="">Groupes:</label>
-    <input type="text" name="groupes" value="{{ $artist->groupes }}"><br><br>
-    <label for="">Qualité: </label>
-    <input type="text" name="qualite"><br><br>
-    <label for="">Droit: </label>
-    <input type="text" name="droit"><br><br>
-    <label for="">Part:</label>
-    <input type="text" name="part"><br><br>
-    <label for="">Hologramme:</label>
-    <input type="text" name="hologramme"><br><br>
-    <button>Ajouter une oeuvre</button>
-    </form>
-@else
-    <form action="{{route('oeuvres.store')}}" method="post">
-    @csrf
-    
-    <label for="">Date depôt: </label>
-    <input type="date" name="date_depot" required><br><br>
-    <label for="">Code titre:</label>
-    <input type="text" name="code_titre"><br><br>
-    <label for="">Titre: </label>
-    <input type="text" name="titre" required><br><br>
-    <label for="">Catégorie: </label>
-    <input type="text" name="categories" value="{{$artist->categorie}}"><br><br>
-    <label for="">Numéro OMDA:</label>
-    <input type="text" name="num" value="{{$artist->num}}"><br><br>
-    <label for="">Auteur:</label>
-    <input type="text" name="auteur" value="{{$artist->nom}}"><br><br>
-    <label for="">Part:</label>
-    <input type="text" name="part"><br><br>
-    <button>Ajouter une oeuvre</button>
-    </form>
-@endif
-</div>
-</div>
 </body>
+
 </html>

@@ -3,7 +3,7 @@
 use App\Http\Controllers\AuthController;
 
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Session;
 
 
 Route::get('/', function () {
@@ -15,6 +15,7 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/dashboard', [AuthController::class, 'dashboard']);
 Route::get('/logout', [AuthController::class, 'logout']);
+
 Route::get('/admin', [AuthController::class, 'index'])->name('admin.index');
 Route::get('/admin/create', [AuthController::class, 'create'])->name('admin.create');
 Route::post('/admin', [AuthController::class, 'store'])->name('admin.store');
@@ -79,3 +80,17 @@ use App\Http\Controllers\EventController;
 Route::post('/events', [EventController::class, 'store'])->name('events.store');
 Route::put('/events/{id}', [EventController::class, 'update']);
 Route::delete('/events/{id}', [EventController::class, 'destroy']);
+
+use App\Models\Admin;
+Route::get('/ping-session', function() {
+    $adminId = session('admin_id'); // ou Auth::id() si tu utilises l’auth Laravel
+    if (!$adminId) return response()->noContent();
+
+    $admin = \App\Models\Admin::find($adminId);
+    if ($admin) {
+        $admin->forceFill(['last_activity' => now()])->save();
+    }
+
+    return response()->noContent();
+});
+

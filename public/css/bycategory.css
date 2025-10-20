@@ -323,7 +323,7 @@ h2 {
 
 @media (max-width: 1366px) {
     .sidebar {width: 220px;}
-    .main-conteneur {margin-left: 220px; padding: 20px;}
+    .main-conteneur {margin-left: 220px; padding: 20px; }
     .artist-table th, .artist-table td {font-size: 0.85rem;}
 }
 

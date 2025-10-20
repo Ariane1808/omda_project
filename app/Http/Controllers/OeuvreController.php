@@ -67,12 +67,13 @@ class OeuvreController extends Controller
             return redirect('/login');
         }
 
+
 // Exemple après un ajout d'œuvre
 ActivityLog::create([
     'user_id' => session('admin_id'),
-    'action' => 'ajouté',
-    'model_type' => 'oeuvre',
-    'details' => 'Ajout de l’œuvre ' . $request->titre,
+    'action' => 'a ajouté',
+    'model_type' => 'l\'oeuvre',
+    'details' => $request->titre . ' pour l\'artiste numéro ' . $request->num,
 ]);
 
 
@@ -179,9 +180,9 @@ if ($request->filled('search')) {
 // Exemple après un ajout d'œuvre
 ActivityLog::create([
     'user_id' => session('admin_id'),
-    'action' => 'modifié',
-    'model_type' => 'oeuvre',
-    'details' => 'Modification de l’œuvre ' . $request->titre,
+    'action' => 'a modifié',
+    'model_type' => 'l\'oeuvre',
+    'details' => $request->titre . ' de l\'artiste numéro ' . $oeuvre->num,
 ]);
 
         return redirect()->route('oeuvres.index')->with('success', 'Oeuvre modifié avec succès');
@@ -202,9 +203,9 @@ ActivityLog::create([
     // Exemple après un ajout d'œuvre
     ActivityLog::create([
     'user_id' => session('admin_id'),
-    'action' => 'supprimé',
-    'model_type' => 'oeuvre',
-    'details' => 'Suppression de l’œuvre ' . $oeuvre->titre . 'de l\'artiste' . $oeuvres->nom,
+    'action' => 'a supprimé',
+    'model_type' => 'l\'oeuvre',
+    'details' => $oeuvre->titre . ' de l\'artiste numéro ' . $oeuvre->num,
     ]);
 
         $oeuvre->delete();
