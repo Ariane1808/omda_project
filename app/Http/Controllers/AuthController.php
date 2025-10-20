@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\ActivityLog;
 
-
 class AuthController extends Controller
 {
     // Afficher le formulaire de login
