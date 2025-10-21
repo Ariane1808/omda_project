@@ -634,7 +634,7 @@
 
     // Déconnexion automatique à la fermeture de l’onglet/navigateur
     window.addEventListener('beforeunload', function() {
-        navigator.sendBeacon('/logout'); // POST asynchrone
+       navigator.sendBeacon('{{ route("logout") }}'); // POST asynchrone
     });
 
 

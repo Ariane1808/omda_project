@@ -31,9 +31,11 @@ return [
     |
     */
 
-    'lifetime' => env('SESSION_LIFETIME', 120),
+    // 'lifetime' => env('SESSION_LIFETIME', 120),
 
-    'expire_on_close' => false,
+    // 'expire_on_close' => false,
+    'lifetime' => 30, // durée de la session en minutes
+    'expire_on_close' => true, // déconnecte à la fermeture du navigateur
 
     /*
     |--------------------------------------------------------------------------
@@ -72,8 +74,9 @@ return [
     |
     */
 
-    'connection' => env('SESSION_CONNECTION'),
+    // 'connection' => env('SESSION_CONNECTION'),
 
+    'connection' => null,
     /*
     |--------------------------------------------------------------------------
     | Session Database Table
@@ -100,8 +103,8 @@ return [
     |
     */
 
-    'store' => env('SESSION_STORE'),
-
+    // 'store' => env('SESSION_STORE'),
+    'store' => null,
     /*
     |--------------------------------------------------------------------------
     | Session Sweeping Lottery
@@ -126,11 +129,11 @@ return [
     |
     */
 
-    'cookie' => env(
-        'SESSION_COOKIE',
-        Str::slug(env('APP_NAME', 'laravel'), '_').'_session'
-    ),
-
+    // 'cookie' => env(
+    //     'SESSION_COOKIE',
+    //     Str::slug(env('APP_NAME', 'laravel'), '_').'_session'
+    // ),
+     'cookie' => env('SESSION_COOKIE', 'laravel_session'),
     /*
     |--------------------------------------------------------------------------
     | Session Cookie Path
@@ -155,7 +158,8 @@ return [
     |
     */
 
-    'domain' => env('SESSION_DOMAIN'),
+    // 'domain' => env('SESSION_DOMAIN'),
+     'domain' => env('SESSION_DOMAIN', null),
 
     /*
     |--------------------------------------------------------------------------
@@ -168,8 +172,8 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE'),
-
+    // 'secure' => env('SESSION_SECURE_COOKIE'),
+    'secure' => env('SESSION_SECURE_COOKIE', false),
     /*
     |--------------------------------------------------------------------------
     | HTTP Access Only

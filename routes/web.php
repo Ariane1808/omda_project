@@ -15,6 +15,13 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/dashboard', [AuthController::class, 'dashboard']);
 Route::get('/logout', [AuthController::class, 'logout']);
+Route::post('/logout', function () {
+    auth()->logout();           // déconnecte l'utilisateur
+    session()->invalidate();    // détruit la session
+    session()->regenerateToken();
+    return response()->noContent(); // réponse vide pour JS
+})->name('logout');
+
 
 Route::get('/admin', [AuthController::class, 'index'])->name('admin.index');
 Route::get('/admin/create', [AuthController::class, 'create'])->name('admin.create');
@@ -83,14 +90,13 @@ Route::delete('/events/{id}', [EventController::class, 'destroy']);
 
 use App\Models\Admin;
 Route::get('/ping-session', function() {
-    $adminId = session('admin_id'); // ou Auth::id() si tu utilises l’auth Laravel
-    if (!$adminId) return response()->noContent();
-
-    $admin = \App\Models\Admin::find($adminId);
-    if ($admin) {
-        $admin->forceFill(['last_activity' => now()])->save();
+    $user = auth()->user();
+    if (!$user) {
+        return response()->json(['error' => 'No authenticated user']);
     }
-
-    return response()->noContent();
+    $user->forceFill(['last_activity' => now()])->save();
+    return response()->json(['success' => true]);
 });
+
+
 

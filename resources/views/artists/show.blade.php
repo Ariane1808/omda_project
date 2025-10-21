@@ -218,17 +218,137 @@
 
 
                             <script>
-                                function printArtist() {
-                                    let content = document.getElementById('artist-info').innerHTML;
-                                    let win = window.open('', '', 'height=700,width=900');
-                                    win.document.write('<html><head><title>Fiche Artiste</title>');
-                                    win.document.write('<style>body{font-family:Arial; padding:20px;} strong{color:#333;}</style>');
-                                    win.document.write('</head><body>');
-                                    win.document.write(content);
-                                    win.document.write('</body></html>');
-                                    win.document.close();
-                                    win.print();
-                                }
+ function printArtist() {
+    let content = document.getElementById('artist-info').innerHTML;
+    let win = window.open('', '', 'height=950,width=750');
+
+    win.document.write('<html><head><title>Fiche Artiste OMDA</title>');
+    win.document.write(`
+        <style>
+            body {
+                font-family: 'Segoe UI', Arial, sans-serif;
+                background: #fff;
+                padding: 0;
+                margin: 0;
+                color: #333;
+            }
+
+            .fiche-container {
+                width: 90%;
+                margin: 30px auto;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                border: 1px solid #ddd;
+            }
+
+            /* Bandeau supérieur */
+            .fiche-header {
+                background-color: #3660a8;
+                color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 20px;
+                position: relative;
+            }
+
+            .logo-print img {
+                height: 70px;
+            }
+
+            .artist-title {
+                font-size: 22px;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                flex: 1;
+                text-align: center;
+            }
+
+            /* Photo stylisée */
+            .photo-id {
+                width: 130px;
+                height: 160px;
+                border: 3px solid #fff;
+                border-radius: 10px;
+                overflow: hidden;
+                background: #f1f1f1;
+                text-align: center;
+                line-height: 160px;
+                color: #666;
+                font-size: 13px;
+                position: absolute;
+                bottom: -80px;
+                right: 30px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            }
+
+            /* Bloc d'informations */
+            .artist-info {
+                background: #f9f9fb;
+                padding: 100px 30px 30px 30px;
+            }
+
+            .artist-info p {
+                margin: 8px 0;
+                font-size: 15px;
+                line-height: 1.5;
+            }
+
+            .artist-info p strong {
+                color: #3660a8;
+                width: 150px;
+            }
+
+            .footer {
+                text-align: center;
+                margin-top: 25px;
+                font-size: 12px;
+                color: #777;
+            }
+                @media print {
+    body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
+
+        </style>
+    `);
+    win.document.write('</head><body>');
+
+    // Contenu HTML stylisé
+    win.document.write(`
+        <div class="fiche-container">
+            <div class="fiche-header">
+                <div class="logo-print">
+                    <img src="${window.location.origin}/images/logo.jpg" alt="OMDA Logo">
+                </div>
+                <div class="artist-title">Fiche d'Artiste</div>
+                <div class="photo-id">Photo d'identité</div>
+            </div>
+
+            <div class="artist-info">
+                ${content}
+            </div>
+
+            <div class="footer">
+                © OMDA - Office Malgache du Droit d’Auteur
+            </div>
+        </div>
+    `);
+
+    win.document.write('</body></html>');
+    win.document.close();
+
+    win.onload = function () {
+        win.print();
+    };
+}
+
+
+
 
 
                                 document.getElementById('exportExcelBtn').addEventListener('click', function() {
