@@ -69,6 +69,8 @@ Route::get('/oeuvres/create', [OeuvreController::class, 'create'])->name('oeuvre
 Route::post('/oeuvres', [OeuvreController::class, 'store'])->name('oeuvres.store');
 // Pour lister toutes les œuvres par catégorie
 Route::get('/oeuvres/category/{categorie}', [OeuvreController::class, 'byCategory'])->name('oeuvres.byCategory');
+// Export des oeuvres par catégorie (CSV)
+Route::get('/oeuvres/export/{categorie}', [OeuvreController::class, 'export'])->name('oeuvres.export');
 Route::get('/oeuvres/{code_titre}/edit', [OeuvreController::class, 'edit'])->name('oeuvres.edit'); // modifier un artiste
 Route::put('/oeuvres/{code_titre}', [OeuvreController::class, 'update'])->name('oeuvres.update');
 Route::delete('/oeuvres/{code_titre}', [OeuvreController::class, 'destroy'])->name('oeuvres.destroy'); // supprimer

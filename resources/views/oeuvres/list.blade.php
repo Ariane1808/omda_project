@@ -5,32 +5,47 @@
 <body>
 
     <style>
-        .artist-table {
+        /* Excel-like table styles */
+        .excel-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
         }
 
-       
-  .artist-table th{
-        border: 1px solid #ccc;
-        border: 1px solid #ccc;
-        padding: 8px 8px;
-    }
-    .artist-table td {
-        border: 1px solid #ccc;
-        padding: 4px 8px;
-        border: 1px solid #ccc;
-    }
-
-        .artist-row {
-            cursor: pointer;
-            transition: background-color 0.2s;
+        .excel-table th,
+        .excel-table td {
+            border: 1px solid #0a0d11;
+            padding: 8px 10px;
+            vertical-align: middle;
         }
 
-        .artist-row:hover {
-            background-color: #e0e0e0;
+        .excel-table thead th {
+            background: linear-gradient(180deg, #f3faf7 0%, #e6f2ea 100%);
+            color: #0b4a33;
+            font-weight: 600;
+            text-align: left;
+            border-bottom: 2px solid #9fc8a8;
         }
+
+        .excel-table tbody tr:nth-child(even) {
+            background-color: #fbfdfb;
+        }
+
+        .excel-table tbody tr:hover {
+            background-color: #f1f7f1;
+        }
+
+        /* small subtle shadows to mimic sheet separation */
+        .excel-table {
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+        }
+
+        /* action buttons */
+        .action-btn { padding:5px 10px; border-radius:5px; text-decoration:none; color:#fff }
+        .btn-edit { background:#3660a8 }
+        .btn-delete { background:#d13b3b }
 
         #toast {
             position: fixed;
@@ -81,7 +96,12 @@
 
         <div class="main-conteneur">
             <div style="display: flex; align-items:center; justify-content: space-between;">
+                
+                <div>
                 <h2>Liste des oeuvres</h2>
+                <!-- Export CSV button -->
+                <br><a href="{{ route('oeuvres.export', $categorie) }}" style="padding:8px 12px; background:#10B981; color:white; border-radius:6px; text-decoration:none;">Exporter oeuvres (CSV)</a>
+                </div>
                 <div style="display: flex; justify-content: flex-end; margin-bottom: 10px; position: relative; width: 220px;">
 
                     <div style="display: flex; align-items:center; justify-content: space-between;">
@@ -112,16 +132,15 @@
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h1>Œuvres - {{ $categorie }}</h1>
-
-
-
-                <div style="margin-top: 15px; display:flex; align-items:center; gap:10px;  flex-direction:column-reverse;">
-
+                
+                <div style="display:flex; align-items:center; gap:12px;">
                     {{-- pagination --}}
                     {{ $oeuvres->links() }}
 
-                    <form onsubmit="goToPage2(event)" style="display:flex; align-items:center; gap:5px;">
-                        <label>Aller à la page :</label>
+                    
+
+                    <form onsubmit="goToPage2(event)" style="display:flex; align-items:center; gap:8px; margin-left:8px;">
+                        <label style="margin-right:4px;">Aller à la page :</label>
                         <input type="number" id="pageInput2" min="1" max="{{ $oeuvres->lastPage() }}" style="width:60px; padding:3px;">
                         <button type="submit" style="padding:5px;">OK</button>
                     </form>
@@ -129,7 +148,7 @@
             </div>
 
             @if($oeuvres->count() > 0)
-            <table class="artist-table">
+            <table class="excel-table">
                 <thead>
                     <tr>
                         <th>Code titre</th>

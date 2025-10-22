@@ -37,9 +37,9 @@ class AuthController extends Controller
     }
 
     // 🔒 Vérifier si une session est déjà active
-    if ($admin->session_id && $admin->session_id !== Session::getId()) {
-        return back()->withErrors(['username' => 'Compte déjà connecté sur un autre appareil']);
-    }
+    // if ($admin->session_id && $admin->session_id !== Session::getId()) {
+    //     return back()->withErrors(['username' => 'Compte déjà connecté sur un autre appareil']);
+    // }
 
     // ✅ Connexion autorisée → enregistrer la session
     session([

@@ -215,60 +215,69 @@
         </nav>
 
 
-        <div class="main-conteneur">
-            @if ($artist->categorie === 'LYR')
-                <form action="{{ route('oeuvres.store') }}" method="post">
-                    @csrf
-                    <input type="hidden" name="type" value="musique">
-                    <label for="">Date depôt: </label>
-                    <input type="date" name="date_depot" required><br><br>
-                    <label for="">Code titre:</label>
-                    <input type="text" name="code_titre"><br><br>
-                    <label for="">Titre: </label>
-                    <input type="text" name="titre" required><br><br>
-                    <label for="">Catégorie: </label>
-                    <input type="text" name="categories" value="{{ $artist->categorie }}"><br><br>
-                    <label for="">Numéro OMDA:</label>
-                    <input type="text" name="num" value="{{ $artist->num }}"><br><br>
-                    <label for="">Nom: </label>
-                    <input type="text" name="nom" value="{{ $artist->nom }}"><br><br>
-                    <label for="">Pseudo:</label>
-                    <input type="text" name="pseudo" value="{{ $artist->pseudo }}"><br><br>
-                    <label for="">Groupes:</label>
-                    <input type="text" name="groupes" value="{{ $artist->groupes }}"><br><br>
-                    <label for="">Qualité: </label>
-                    <input type="text" name="qualite"><br><br>
-                    <label for="">Droit: </label>
-                    <input type="text" name="droit"><br><br>
-                    <label for="">Part:</label>
-                    <input type="text" name="part"><br><br>
-                    <label for="">Hologramme:</label>
-                    <input type="text" name="hologramme"><br><br>
-                    <button class="button"><span class="button-content">Ajouter une oeuvre</span></button>
-                </form>
-            @else
-                <form action="{{ route('oeuvres.store') }}" method="post">
-                    @csrf
-
-                    <label for="">Date depôt: </label>
-                    <input type="date" name="date_depot" required><br><br>
-                    <label for="">Code titre:</label>
-                    <input type="text" name="code_titre"><br><br>
-                    <label for="">Titre: </label>
-                    <input type="text" name="titre" required><br><br>
-                    <label for="">Catégorie: </label>
-                    <input type="text" name="categories" value="{{ $artist->categorie }}"><br><br>
-                    <label for="">Numéro OMDA:</label>
-                    <input type="text" name="num" value="{{ $artist->num }}"><br><br>
-                    <label for="">Auteur:</label>
-                    <input type="text" name="auteur" value="{{ $artist->nom }}"><br><br>
-                    <label for="">Part:</label>
-                    <input type="text" name="part"><br><br>
-                    <button class="button"><span class="button-content">Ajouter une oeuvre</span></button>
-                </form>
-            @endif
-        </div>
-    </div>
+   <div class="main-conteneur">
+@if ($artist->categorie === 'LYR')
+<div id="addForm" style="margin-bottom: 20px; padding:10px; border:1px solid #ccc; border-radius:5px; background:#f9f9f9;">
+    <form action="{{route('oeuvres.store')}}" method="post">
+    @csrf
+    <input type="hidden" name="type" value="musique">
+    <label for="">Date depôt: </label>
+    <input type="date" name="date_depot" required>
+    <label for="">Code titre:</label>
+    <input type="text" name="code_titre" required>
+    <label for="">Titre: </label>
+    <input type="text" name="titre" required>
+    <label for="">Catégorie: </label>
+    <input type="text" name="categories" value="{{ $artist->categorie }}" required>
+    <label for="">Numéro OMDA:</label>
+    <input type="text" name="num" value="{{ $artist->num }}" required>
+    <label for="">Nom: </label>
+    <input type="text" name="nom" value="{{ $artist->nom }}" required> 
+    <label for="">Pseudo:</label>
+    <input type="text" name="pseudo" value="{{ $artist->pseudo }}" required>
+    <label for="">Groupes:</label>
+    <input type="text" name="groupes" value="{{ $artist->groupes }}" required>
+    <label for="">Qualité: </label>
+    <select name="qualite" id="">
+        <option value="A">A</option>
+        <option value="AR">AR</option>
+        <option value="C">C</option>
+    </select>
+    <label for="">Droit: </label>
+    <input type="text" name="droit" required>
+    <label for="">Part:</label>
+    <input type="text" name="part" required>
+    <label for="">Hologramme:</label>
+    <input type="text" name="hologramme">
+    <button class="btn btn-save" style="padding:5px 10px; cursor:pointer;">Ajouter une oeuvre</button><br>
+    <a href="{{ route('oeuvres.index') }}" class="btn btn-cancel">Annuler</a>
+    </form>
+</div>
+@else
+<div id="addForm" style="margin-bottom: 20px; padding:10px; border:1px solid #ccc; border-radius:5px; background:#f9f9f9;">
+    <form action="{{route('oeuvres.store')}}" method="post">
+    @csrf
+    
+    <label for="">Date depôt: </label>
+    <input type="date" name="date_depot" required>
+    <label for="">Code titre:</label>
+    <input type="text" name="code_titre" required>
+    <label for="">Titre: </label>
+    <input type="text" name="titre" required>
+    <label for="">Catégorie: </label>
+    <input type="text" name="categories" value="{{$artist->categorie}}" required>
+    <label for="">Numéro OMDA:</label>
+    <input type="text" name="num" value="{{$artist->num}}" required>
+    <label for="">Auteur:</label>
+    <input type="text" name="auteur" value="{{$artist->nom}}" required>
+    <label for="">Part:</label>
+    <input type="text" name="part" required>
+    <button class="btn btn-save" style="padding:5px 10px; cursor:pointer;">Ajouter une oeuvre</button><br>
+    <a href="{{ route('oeuvres.index') }}" class="btn btn-cancel">Annuler</a>
+    </form>
+</div>
+@endif
+</div>
+</div>
 </body>
-
 </html>

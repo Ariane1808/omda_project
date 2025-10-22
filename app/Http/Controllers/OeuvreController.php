@@ -158,6 +158,46 @@ if ($request->filled('search')) {
         compact('type','oeuvre');
         return view('artists.show', compact('artist', 'oeuvres', 'type')); 
     }
+
+    /**
+     * Exporter les oeuvres d'une catégorie en CSV.
+     * - si $categorie == 'LYR' exporte les OeuvreMusique
+     * - sinon exporte les OeuvreNonMusique
+     */
+    public function export(Request $request, $categorie)
+    {
+        if ($categorie === 'LYR') {
+            $items = OeuvreMusique::where('categorie', $categorie)->get();
+            $headers = ['date_depot', 'code_titre', 'titre', 'categorie', 'num', 'nom', 'pseudo', 'groupes', 'qualite', 'droit', 'part', 'hologramme'];
+            $filename = "oeuvres_musiques_{$categorie}.csv";
+        } else {
+            $items = OeuvreNonMusique::where('categories', $categorie)->get();
+            $headers = ['code_titre', 'date_depot', 'num', 'titre', 'categories', 'auteur', 'part'];
+            $filename = "oeuvres_non_musiques_{$categorie}.csv";
+        }
+
+        $callback = function() use ($items, $headers) {
+            $out = fopen('php://output', 'w');
+            // En-têtes CSV
+            fputcsv($out, $headers);
+
+            foreach ($items as $item) {
+                $row = [];
+                foreach ($headers as $h) {
+                    $row[] = isset($item[$h]) ? $item[$h] : (isset($item->$h) ? $item->$h : '');
+                }
+                fputcsv($out, $row);
+            }
+            fclose($out);
+        };
+
+        $responseHeaders = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        return response()->stream($callback, 200, $responseHeaders);
+    }
     public function edit($code_titre)
     {
         $oeuvre = OeuvreMusique::where('code_titre', $code_titre)->first();

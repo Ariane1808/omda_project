@@ -158,177 +158,162 @@
 
             </ul>
         </nav>
-        {{-- notif pour modifications d'artiste --}}
-        @if (session('success'))
-            <div id="toast" class="fixed bottom-5 right-5 bg-green-600 text-white px-4 py-2 rounded shadow-lg z-50">
-                {{ session('success') }}
-            </div>
+    {{-- notif pour modifications d'artiste --}}
+@if(session('success'))
+    <div id="toast" class="fixed bottom-5 right-5 bg-green-600 text-white px-4 py-2 rounded shadow-lg z-50">
+        {{ session('success') }}
+    </div>
 
-            <script>
-                setTimeout(() => {
-                    const toast = document.getElementById('toast');
-                    if (toast) toast.remove();
-                }, 3000);
-            </script>
-        @endif
-        <div class="main-conteneur">
-            <div style="display: flex; align-items:center; justify-content: space-between;">
-                <h2>Liste des artistes</h2>
-                <div
-                    style="display: flex; justify-content: flex-end; margin-bottom: 10px; position: relative; width: 220px;">
+    <script>
+        setTimeout(() => {
+            const toast = document.getElementById('toast');
+            if (toast) toast.remove();
+        }, 3000);
+    </script>
+@endif
+    <div class="main-conteneur">
+        <div style="display: flex; align-items:center; justify-content: space-between;">
+        <h2>Liste des artistes</h2>
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 10px; position: relative; width: 220px;">
+        
+      <div style="display: flex; align-items:center; justify-content: space-between;">
 
-                    <div style="display: flex; align-items:center; justify-content: space-between;">
+    <div style="display: flex; gap: 10px; align-items: center;">
 
-                        <div style="display: flex; gap: 10px; align-items: center;">
+        <!-- Recherche -->
+        <form method="GET" action="{{ route('artists.byCategory', $categorie) }}" style="position: relative;">
+            <input type="text" id="searchInput" name="search" 
+                   value="{{ request('search') }}" 
+                   placeholder="Rechercher..." 
+                   style="padding:5px 10px; width:200px;">
+            <span id="clearSearch" style="cursor:pointer; border: 1px solid rgb(224, 214, 214); padding:3px 5px 5px ; position: absolute; background-color:rgb(197, 29, 29); color:#ccc">
+                  &times;
+            </span>
+            <button type="submit" style="margin-top:10px; padding:5px;">Rechercher</button>
+        </form>
 
-                            <!-- Recherche -->
-                            <form method="GET" action="{{ route('artists.byCategory', $categorie) }}"
-                                style="position: relative;">
-                                <input type="text" id="searchInput" name="search" value="{{ request('search') }}"
-                                    placeholder="Rechercher..." style="padding:5px 10px; width:200px;" class="input">
-                                <span id="clearSearch"
-                                    style="cursor:pointer; border: 1px solid rgb(224, 214, 214); padding:3px 5px 5px ; position: absolute; background-color:rgb(197, 29, 29); color:#ccc">
-                                    &times;
-                                </span>
-                                <button type="submit"
-                                    style="margin-top:10px; padding:5px; display:flex; align-items:center; gap:10px;"><img
-                                        src="{{ asset('icons/search_24dp_000000_FILL0_wght400_GRAD0_opsz24.png') }}"
-                                        alt="Search" width="16" height="16" alt="">Rechercher</button>
-                            </form>
+    </div>
+</div>
+        
+        <!-- <input type="text" id="searchInput" placeholder="Rechercher..." style="padding:5px 10px; width:100%;"> -->
+           
+        </div>
+        </div>
+        <button id="addBtn" class="button" style="padding:5px 10px; cursor:pointer;"><span class="button-content">Ajouter un artiste</span></button>
 
-                        </div>
-                    </div>
-
-                    <!-- <input type="text" id="searchInput" placeholder="Rechercher..." style="padding:5px 10px; width:100%;"> -->
-
-                </div>
-            </div>
-            <button class="button" id="addBtn"
-                style=" background-color: #e5e7eb;display: flex; align-items:center; gap: 10px; border-radius: 30px; padding:10px; border:none;box-shadow: -10px -10px 20px white, 10px 10px 20px rgb(153, 161, 175), inset -10px -10px 20px rgb(209, 213, 220);"><span
-                    class="button-content">Ajouter un artiste</span></button>
-
-            <!-- Formulaire caché au départ -->
-            <div id="addForm"
-                style="display:none; margin-bottom: 20px; padding:10px; border:1px solid #ccc; border-radius:5px; background:#f9f9f9;">
-                <form action="{{ route('artists.store') }}" method="POST">
-                    @csrf
-                    <div style="margin-bottom:5px;">
-                        <label>Numéro Wipo:</label>
-                        <input type="text" name="num_wipo" required>
-                    </div>
-                    <div style="margin-bottom:5px;">
-                        <label>Date d'adhésion:</label>
-                        <input type="date" name="date_adh" required>
-                    </div>
-                    <!-- <div style="margin-bottom:5px;">
+        <!-- Formulaire caché au départ -->
+        <div id="addForm" style="display:none; margin-bottom: 20px; padding:10px; border:1px solid #ccc; border-radius:5px; background:#f9f9f9;">
+            <form action="{{ route('artists.store') }}" method="POST">
+                @csrf
+                
+                    <label>Numéro Wipo:</label>
+                    <input type="text" name="num_wipo" required>
+                
+                
+                    <label>Date d'adhésion:</label>
+                    <input type="date" name="date_adh" required>
+                
+                <!-- 
                     <label>Numéro Omda:</label>
                     <input type="text" name="num" required>
                 </div> -->
-                    <div style="margin-bottom:5px;">
-                        <label>Catégories:</label>
-                        <!-- <input type="text" name="categorie" value= "{{ $categorie }}"> -->
-                        <select name="categorie" id="">
-                            <option value="LIT" @selected($categorie == 'LIT')>Littérature</option>
-                            <option value="LYR" @selected($categorie == 'LYR')>Musique</option>
-                            <option value="DRA" @selected($categorie == 'DRA')>Dramatique</option>
-                            <option value="AAV" @selected($categorie == 'AAV')>Audiovisuel</option>
-                        </select>
+                
+                    <label>Catégories:</label>
+                    <!-- <input type="text" name="categorie" value= ""> -->
+                    <select name="categorie" id="">
+                        <option value="LIT" @selected($categorie == 'LIT')>Littérature</option>
+                        <option value="LYR" @selected($categorie == 'LYR')>Musique</option>
+                        <option value="DRAM" @selected($categorie == 'DRA')>Dramatique</option>
+                        <option value="AAV" @selected($categorie == 'AAV')>Audiovisuel</option>
+                    </select>
 
-                    </div>
-                    <div style="margin-bottom:5px;">
-                        <label>Nom:</label>
-                        <input type="text" name="nom" required>
-                    </div>
-                    <div style="margin-bottom:5px;">
-                        <label>Pseudo:</label>
-                        <input type="text" name="pseudo" required>
-                    </div>
-                    <div style="margin-bottom:5px;">
-                        <label>Groupe:</label>
-                        <input type="text" name="groupes" required>
-                    </div>
-                    <div style="margin-bottom:5px;">
-                        <label>contact:</label>
-                        <input type="text" name="contact" required>
-                    </div>
-                    <div style="margin-bottom:5px;">
-                        <label>Email:</label>
-                        <input type="text" name="email" required>
-                    </div>
-                    <div style="margin-bottom:5px;">
-                        <label>Adresse:</label>
-                        <input type="text" name="adresse" required>
-                    </div>
-                    <div style="margin-bottom:5px;">
-                        <label>Province:</label>
-                        <select name="province" id="">
-                            <option value="ANTANANARIVO">ANTANANARIVO</option>
-                            <option value="TOAMASINA">TOAMASINA</option>
-                            <option value="ANTSIRANANA">ANTSIRANANA</option>
-                            <option value="MAHAJANGA">MAHAJANGA</option>
-                            <option value="FIANARANTSOA">FIANARANTSOA</option>
-                            <option value="TOLIARA">TOLIARA</option>
-                        </select>
-                    </div>
-                    <div style="margin-bottom:5px; flex-direction: column;max-width: 200px;align-items: flex-start;">
-                        <!-- <input type="text" name="sexe" required> -->
-                        <label>Sexe :</label>
-                        <input type="radio" name="sexe" value="H" id="homme" required>
-                        <label for="homme">Homme</label>
+                
+                
+                    <label>Nom:</label>
+                    <input type="text" name="nom" required>
+                
+                
+                    <label>Pseudo:</label>
+                    <input type="text" name="pseudo" required>
+                
+                
+                    <label>Groupe:</label>
+                    <input type="text" name="groupes" required>
+                
+                
+                    <label>contact:</label>
+                    <input type="text" name="contact" required>
+                
+                
+                    <label>Email:</label>
+                    <input type="text" name="email" required>
+                
+                
+                    <label>Adresse:</label>
+                    <input type="text" name="adresse" required>
+                
+                
+                    <label>Province:</label>
+                   <select name="province" id="">
+                        <option value="ANTANANARIVO">ANTANANARIVO</option>
+                        <option value="TOAMASINA">TOAMASINA</option>
+                        <option value="ANTSIRANANA">ANTSIRANANA</option>
+                        <option value="MAHAJANGA">MAHAJANGA</option>
+                        <option value="FIANARANTSOA">FIANARANTSOA</option>
+                        <option value="TOLIARA">TOLIARA</option>
+                     </select>
+                
+                
+                    <!-- <input type="text" name="sexe" required> -->
+                     <label>Sexe :</label>
+                     <input type="radio" name="sexe" value="H" id="homme" required>
+                     <label for="homme">Homme</label>
 
-                        <input type="radio" name="sexe" value="F" id="femme">
-                        <label for="femme">Femme</label>
+                     <input type="radio" name="sexe" value="F" id="femme">
+                     <label for="femme">Femme</label>
 
-                    </div>
-                    <div style="margin-bottom:5px;">
-                        <label>CIN:</label>
-                        <input type="text" name="cin" required>
-                    </div>
-                    <div style="margin-bottom:5px;">
-                        <label>Date de naissande:</label>
-                        <input type="date" name="date_naissance" required>
-                    </div>
-                    <div style="margin-bottom:5px;">
-                        <label>Pension:</label>
-                        <input type="text" name="pension" required>
-                    </div>
-                    <div style="margin-bottom:5px;">
-                        <label>Statut:</label>
-                        <input type="text" name="statut">
-                    </div>
-                    <div style="margin-bottom:5px;">
-                        <label>Hologramme:</label>
-                        <input type="text" name="hologramme">
-                    </div>
+                
+                
+                    <label>CIN:</label>
+                    <input type="text" name="cin" required>
+                
+                
+                    <label>Date de naissande:</label>
+                    <input type="date" name="date_naissance" required>
+                
+                
+                    <label>Pension:</label>
+                    <input type="text" name="pension" required>
+                
+                    <label>Statut:</label>
+                    <input type="text" name="statut">
+                
+                
+                    <label>Hologramme:</label>
+                    <input type="text" name="hologramme">
+                
 
+                <button type="submit" style="padding:5px 10px; cursor:pointer;">Enregistrer</button>
+            </form>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>Artistes - {{ $categorie }}</h2>
 
-                    <div class="bouton" style="display: flex; gap: 20px; flex-direction:initial;">
-                        <button type="submit" style="padding:5px 10px; cursor:pointer;" class="button"><span
-                            class="button-content">Enregistrer</span></button>
-                        <a href="{{ route('artists.byCategory', ['categorie' => $categorie])}}" class="button"><span class="button-content">Fermer</span></a>
-                    </div>
-                </form>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2>Artistes - {{ $categorie }}</h2>
+    <div style="margin-top: 15px; display:flex; align-items:center; gap:10px;">
+       
+       {{-- pagination --}}
+            {{ $artists->links() }}
 
-                <div
-                    style="margin-top: 15px; display:flex; align-items:center; gap:10px; flex-direction:column-reverse;">
-
-                    {{-- pagination --}}
-                    {{ $artists->links() }}
-
-                    <form onsubmit="goToPage(event)" style="display:flex; align-items:center; gap:5px;">
-                        <label>Aller à la page :</label>
-                        <input type="number" id="pageInput" min="1" max="{{ $artists->lastPage() }}"
-                            style="width:60px; padding:3px;">
-                        <button type="submit" style="padding:5px;">OK</button>
-                    </form>
-                </div>
-            </div>
-            @if ($artists->count() > 0)
-                <table class="artist-table" id="artistTable">
-                    <thead>
+        <form onsubmit="goToPage(event)" style="display:flex; align-items:center; gap:5px;">
+            <label>Aller à la page :</label>
+            <input type="number" id="pageInput" min="1" max="{{ $artists->lastPage() }}" style="width:60px; padding:3px;">
+            <button type="submit" style="padding:5px;">OK</button>
+        </form>
+    </div>
+        </div>
+@if($artists->count() > 0)
+<table class="artist-table" id="artistTable">
+     <thead>
                         <tr>
                             <th
                                 data-href="{{ route('artists.byCategory', ['categorie' => $categorie, 'sort' => 'num', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">
@@ -378,18 +363,18 @@
                             <td style="padding: 8px 8px;">Action</td>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach ($artists as $artist)
-                            <tr class="artist-row" data-href="{{ route('artists.show', $artist->num) }}"
-                                style="cursor:pointer;">
+    <tbody>
+        @foreach($artists as $artist)
+       
+      <tr class="artist-row" data-href="{{ route('artists.show', $artist->num) }}" style="cursor:pointer;">
 
-                                <td>{{ $artist->num }}</td>
-                                <td>{{ $artist->nom }}</td>
-                                <td>{{ $artist->pseudo }}</td>
-                                <td>{{ $artist->date_naissance }}</td>
-                                <td>{{ $artist->contact }}</td>
-
-                                <td style="border:none;">
+        <td>{{ $artist->num }}</td>
+            <td>{{ $artist->nom }}</td>
+            <td>{{ $artist->pseudo }}</td>
+            <td>{{ $artist->date_naissance }}</td>
+            <td>{{ $artist->contact }}</td>
+            
+             <td style="border:none;">
                                     <!-- Bouton modifier -->
                                     <a href="{{ route('artists.edit', $artist->num) }}"
                                         style="padding:5px 10px; background:#3660a8; color:white; border-radius:5px; text-decoration:none;"><img
@@ -417,41 +402,45 @@
                                                 alt=""></button>
                                     </form>
                                 </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
 
-                <div
-                    style="margin-top: 15px; display:flex; align-items:center; gap:10px;  flex-direction:column-reverse;">
+        </tr>
+        
+        @endforeach
+    </tbody>
+</table>
 
-                    {{-- pagination --}}
-                    {{ $artists->links() }}
+<div style="margin-top: 15px; display:flex; align-items:center; gap:10px;">
+       
+       {{-- pagination --}}
+    {{ $artists->links() }}
 
-                    <form onsubmit="goToPage2(event)" style="display:flex; align-items:center; gap:5px;">
-                        <label>Aller à la page :</label>
-                        <input type="number" id="pageInput2" min="1" max="{{ $artists->lastPage() }}"
-                            style="width:60px; padding:3px;">
-                        <button type="submit" style="padding:5px;">OK</button>
-                    </form>
-                </div>
-            @else
-                <p>Aucun artiste dans cette catégorie.</p>
-            @endif
+    <!-- Bouton d'export CSV des oeuvres pour cette catégorie -->
+    <a href="{{ route('oeuvres.export', $categorie) }}" style="padding:8px 12px; background:#10B981; color:white; border-radius:6px; text-decoration:none; margin-left:8px;">Exporter oeuvres (CSV)</a>
 
-        </div>
-
-        <style>
-            .categorie-card:hover {
-                background-color: #f0f0f0;
-                transform: scale(1.05);
-            }
-        </style>
-
-    </div>
+        <form onsubmit="goToPage2(event)" style="display:flex; align-items:center; gap:5px;">
+            <label>Aller à la page :</label>
+            <input type="number" id="pageInput2" min="1" max="{{ $artists->lastPage() }}" style="width:60px; padding:3px;">
+            <button type="submit" style="padding:5px;">OK</button>
+        </form>
     </div>
 
-    <script>
+@else
+<p>Aucun artiste dans cette catégorie.</p>
+@endif
+
+</div>
+
+<style>
+.categorie-card:hover {
+    background-color: #f0f0f0;
+    transform: scale(1.05);
+}
+</style>
+
+    </div>
+</div>
+
+ <script>
         document.addEventListener('DOMContentLoaded', function() {
             // navigation par clic sur la ligne, sauf si on clique un bouton/lien/champ
             document.querySelectorAll('#artistTable tbody tr').forEach(tr => {
