@@ -119,10 +119,10 @@ public function byCategory(Request $request, $categorie)
     // Déterminer le modèle selon la catégorie
   if ($categorie == 'LYR') {
     $query = OeuvreMusique::where('categorie', $categorie);
-    $fields = ['nom', 'titre', 'code_titre', 'pseudo'];
+    $fields = ['nom', 'titre','num', 'code_titre', 'pseudo'];
 } else {
     $query = OeuvreNonMusique::where('categories', $categorie);
-    $fields = ['titre', 'code_titre', 'auteur'];
+    $fields = ['titre', 'code_titre','num', 'auteur'];
 }
 
 if ($request->filled('search')) {
