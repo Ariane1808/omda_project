@@ -36,10 +36,10 @@ class AuthController extends Controller
         return back()->withErrors(['username' => 'Nom d\'utilisateur ou mot de passe incorrect']);
     }
 
-    // 🔒 Vérifier si une session est déjà active
-    if ($admin->session_id && $admin->session_id !== Session::getId()) {
-        return back()->withErrors(['username' => 'Compte déjà connecté sur un autre appareil']);
-    }
+    // // 🔒 Vérifier si une session est déjà active
+    // if ($admin->session_id && $admin->session_id !== Session::getId()) {
+    //     return back()->withErrors(['username' => 'Compte déjà connecté sur un autre appareil']);
+    // }
 
     // ✅ Connexion autorisée → enregistrer la session
     session([

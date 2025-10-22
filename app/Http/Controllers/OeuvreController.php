@@ -16,9 +16,9 @@ class OeuvreController extends Controller
         $musiques = OeuvreMusique::all();
         $nonMusiques = OeuvreNonMusique::all();
         $recentOeuvres = OeuvreMusique::orderBy('date_depot','desc')->take(5)->get();
-        if (!$recentOeuvres) {
-            $recentOeuvres = OeuvreNonMusique::orderBy('date_depot','desc')->take(5)->get();
-        }
+        // if (!$recentOeuvres) {
+        //     $recentOeuvres = OeuvreNonMusique::orderBy('date_depot','desc')->take(5)->get();
+        // }
         return view('oeuvres.index', compact('musiques', 'nonMusiques', 'recentOeuvres'));
     }
 

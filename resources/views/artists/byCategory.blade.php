@@ -207,14 +207,31 @@
                 style=" background-color: #e5e7eb;display: flex; align-items:center; gap: 10px; border-radius: 30px; padding:10px; border:none;box-shadow: -10px -10px 20px white, 10px 10px 20px rgb(153, 161, 175), inset -10px -10px 20px rgb(209, 213, 220);"><span
                     class="button-content">Ajouter un artiste</span></button>
 
+{{--                     
+            <div style="display:flex; gap:10px; align-items:center;">
+                <button class="button" id="addBtn"
+                    style=" background-color: #e5e7eb;display: flex; align-items:center; gap: 10px; border-radius: 30px; padding:10px; border:none;box-shadow: -10px -10px 20px white, 10px 10px 20px rgb(153, 161, 175), inset -10px -10px 20px rgb(209, 213, 220);"><span
+                        class="button-content">Ajouter un artiste</span></button>
+
+                <!-- Export all artists button -->
+                <a href="{{ route('artists.export') }}" target="_blank" class="button" title="Exporter tous les artistes">
+                    <span class="button-content">Exporter (Excel)</span>
+                </a>
+            </div> --}}
+
+            
             <!-- Formulaire caché au départ -->
             <div id="addForm"
                 style="display:none; margin-bottom: 20px; padding:10px; border:1px solid #ccc; border-radius:5px; background:#f9f9f9;">
                 <form action="{{ route('artists.store') }}" method="POST">
                     @csrf
                     <div style="margin-bottom:5px;">
+                        <label>Numéro OMDA:</label>
+                        <input type="text" name="num" required>
+                    </div>
+                    <div style="margin-bottom:5px;">
                         <label>Numéro Wipo:</label>
-                        <input type="text" name="num_wipo" required>
+                        <input type="text" name="num_wipo">
                     </div>
                     <div style="margin-bottom:5px;">
                         <label>Date d'adhésion:</label>
@@ -245,7 +262,7 @@
                     </div>
                     <div style="margin-bottom:5px;">
                         <label>Groupe:</label>
-                        <input type="text" name="groupes" required>
+                        <input type="text" name="groupes">
                     </div>
                     <div style="margin-bottom:5px;">
                         <label>contact:</label>
@@ -253,7 +270,7 @@
                     </div>
                     <div style="margin-bottom:5px;">
                         <label>Email:</label>
-                        <input type="text" name="email" required>
+                        <input type="text" name="email">
                     </div>
                     <div style="margin-bottom:5px;">
                         <label>Adresse:</label>
@@ -285,12 +302,12 @@
                         <input type="text" name="cin" required>
                     </div>
                     <div style="margin-bottom:5px;">
-                        <label>Date de naissande:</label>
+                        <label>Date de naissance:</label>
                         <input type="date" name="date_naissance" required>
                     </div>
                     <div style="margin-bottom:5px;">
                         <label>Pension:</label>
-                        <input type="text" name="pension" required>
+                        <input type="text" name="pension">
                     </div>
                     <div style="margin-bottom:5px;">
                         <label>Statut:</label>

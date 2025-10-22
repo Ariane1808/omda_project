@@ -10,10 +10,10 @@ class OeuvreMusique extends Model
     use HasFactory;
 
     protected $table = 'oeuvres_musiques';
-    protected $primaryKey = 'code_titre';
+    protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['date_depot', 'code_titre', 'titre', 'categorie', 'num', 'nom', 'pseudo', 'groupes', 'qualite', 'droit', 'part', 'hologramme'];
+    protected $fillable = ['id','date_depot', 'code_titre', 'titre', 'categorie', 'num', 'nom', 'pseudo', 'groupes', 'qualite', 'droit', 'part', 'hologramme'];
     public $timestamps = false;
     public function oeuvresMusique()
     {

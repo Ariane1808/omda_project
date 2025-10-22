@@ -4,7 +4,9 @@ use App\Http\Controllers\AuthController;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
-
+use Illuminate\Support\Collection;
+use App\Models\Artist;
+use Maatwebsite\Excel\Facades\Excel;
 
 Route::get('/', function () {
     return view('login'); // On affiche la vue login par défaut
@@ -50,6 +52,9 @@ Route::get('/artists/search', [ArtistController::class, 'search'])->name('artist
 Route::get('/artists/category/{categorie}', [ArtistController::class, 'byCategory'])->name('artists.byCategory');
 Route::get('/artists/{num}/show', [ArtistController::class, 'show'])->name('artists.show');
 
+// Export all artists (CSV/Excel-compatible)
+Route::get('/artists/export/all', [ArtistController::class, 'exportAll'])->name('artists.export');
+Route::post('/artists/import', [ArtistController::class, 'import'])->name('artists.import');
 
 
 use App\Http\Controllers\WorkController;

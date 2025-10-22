@@ -298,7 +298,8 @@
 
             .artist-info p strong {
                 color: #3660a8;
-                width: 150px;
+                display: inline-block;
+                width: 200px;
             }
 
             .footer {
