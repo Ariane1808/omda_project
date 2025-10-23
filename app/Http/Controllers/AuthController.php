@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 use App\Models\ActivityLog;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -45,11 +46,19 @@ class AuthController extends Controller
     // }
 
     // ✅ Connexion autorisée → enregistrer la session
+    // session([
+    //     'admin_id' => $admin->id,
+    //     'username' => $admin->username,
+    //     'role' => $admin->role,
+    //     'admin' => $admin
+    // ]);
     session([
-        'admin_id' => $admin->id,
-        'username' => $admin->username,
-        'role' => $admin->role,
-    ]);
+    'admin_id' => $admin->id,
+    'username' => $admin->username,
+    'role' => $admin->role,
+    'admin' => $admin,
+]);
+
 
     // 🔁 Mettre à jour le session_id
     $admin->update(['session_id' => Session::getId()]);
@@ -264,29 +273,40 @@ for ($i = 1; $i <= 12; $i++) {
 
 
 
-    public function store(Request $request)
-    {
-        
+   public function store(Request $request)
+{
+   $admin = session('admin');
 
-   $request->validate([
-        'username'  => 'required|string|max:255|unique:admin,username',
-        'email'     => 'required|email|unique:admin,email',
-        'adresse'   => 'nullable|string|max:255',
-        'telephone' => 'nullable|string|max:30',
-        'password'  => 'required|min:6',
+
+    $validated = $request->validate([
+        'username' => 'required|string|max:255',
+        'email' => 'required|email',
+        'adresse' => 'required|string|max:255',
+        'telephone' => 'required|string|max:30',
+        'password' => 'required|string|min:6',
+        'photo' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:8192',
     ]);
 
-    \App\Models\Admin::create([
-        'username'  => $request->username,
-        'email'     => $request->email,
-        'adresse'   => $request->adresse,
-        'telephone' => $request->telephone,
-        'password'  => bcrypt($request->password),
-    ]);
-
-
-    return redirect()->route('admin.index')->with('success', 'Administrateur ajouté avec succès.');
+    // Upload photo si présente
+    $photoPath = null;
+    if ($request->hasFile('photo')) {
+        $photoPath = $request->file('photo')->store('admin', 'public');
     }
+
+    // Création de l'admin
+    Admin::create([
+        'username' => $validated['username'],
+        'email' => $validated['email'],
+        'adresse' => $validated['adresse'],
+        'telephone' => $validated['telephone'],
+        'password' => bcrypt($validated['password']),
+        'photo' => $photoPath, // Sauvegarde du chemin
+    ]);
+
+
+    return redirect()->back()->with('success', 'Administrateur ajouté avec succès.');
+}
+
 
      public function edit($id)
     {
@@ -420,6 +440,39 @@ public function deleteAccount(Request $request)
 
         return view('admin.information', compact('admin'))->with('username', session('username'));
     }
+
+  public function updatePhoto(Request $request)
+{
+    if (!session()->has('admin_id')) {
+        return redirect()->back()->with('error', 'Aucun administrateur connecté.');
+    }
+
+    $admin = Admin::find(session('admin_id'));
+
+    if (!$admin) {
+        return redirect()->back()->with('error', 'Administrateur introuvable.');
+    }
+
+    $request->validate([
+        'photo' => 'required|image|mimes:jpg,jpeg,png,gif|max:8192',
+    ]);
+
+    // Supprimer l'ancienne photo si elle existe
+    if ($admin->photo && Storage::disk('public')->exists($admin->photo)) {
+        Storage::disk('public')->delete($admin->photo);
+    }
+
+    // Upload de la nouvelle photo
+    $photoPath = $request->file('photo')->store('admin', 'public');
+
+    // Mise à jour de la photo
+    $admin->update(['photo' => $photoPath]);
+
+    // Rafraîchir la session (photo mise à jour)
+    session(['admin' => $admin]);
+
+    return redirect()->back()->with('success', 'Photo de profil mise à jour avec succès.');
+}
 
 
 

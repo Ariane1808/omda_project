@@ -327,7 +327,6 @@ public function show($num)
         ->header('Content-Disposition', "attachment; filename=\"{$fileName}\"")
         ->header('Cache-Control', 'max-age=0');
 }
-
 public function import(Request $request)
 {
     if (!session()->has('admin_id')) {
@@ -341,38 +340,76 @@ public function import(Request $request)
     $file = $request->file('file');
     $path = $file->getRealPath();
 
-    $rows = array_map('str_getcsv', file($path));
-    $header = array_map('trim', $rows[0]); // première ligne = noms de colonnes
-    unset($rows[0]); // supprimer la ligne des en-têtes
+    // 🔹 Lire le contenu et enlever le BOM
+    $content = file_get_contents($path);
+    $content = preg_replace('/^\xEF\xBB\xBF/', '', $content);
+
+    // 🔹 Lire chaque ligne séparée par ";"
+    $rows = array_map(function($line) {
+        return str_getcsv(trim($line), ';');
+    }, explode("\n", trim($content)));
+
+    $header = array_map(function($h) {
+        // Normaliser les clés : minuscules, sans espaces
+        return strtolower(str_replace([' ', '_'], '', trim($h)));
+    }, $rows[0]);
+
+    unset($rows[0]);
 
     foreach ($rows as $row) {
+        if (count($row) !== count($header)) continue;
+
         $data = array_combine($header, $row);
 
-        // Mettre à jour si le num existe, sinon créer
+        // Vérifie ce que contient une ligne (pour débogage)
+        // dd($data);
+         // convertir la date au format MySQL
+    $date_adh = isset($data['dateadh']) ? date('Y-m-d', strtotime(str_replace('/', '-', $data['dateadh']))) : null;
+    $date_naissance = isset($data['datenaiss']) ? date('Y-m-d', strtotime(str_replace('/', '-', $data['datenaiss']))) : null;
+
+   $cin = $data['cin'] ?? null;
+if ($cin) {
+    $cin = trim($cin);
+
+    // Si Excel a mis en notation scientifique
+    if (stripos($cin, 'e') !== false) {
+        // Exemple: "1.01231E+11" → "101231000000"
+        if (preg_match('/^([0-9]+)\.?([0-9]*)e\+?([0-9]+)$/i', $cin, $matches)) {
+            $cin = $matches[1] . $matches[2];
+            $exponent = (int)$matches[3] - strlen($matches[2]);
+            $cin .= str_repeat('0', $exponent);
+        }
+    }
+
+    // On garde uniquement les chiffres (sécurité)
+    $cin = preg_replace('/\D/', '', $cin);
+}
+
+
+
         Artist::updateOrCreate(
-            ['num' => $data['num']], // clé unique
+            ['num' => $data['num'] ?? null],
             [
-                'num_wipo' => $data['num_wipo'] ?? null,
-                'date_adh' => $data['date_adh'] ?? null,
-                'categorie' => $data['categorie'] ?? null,
-                'nom' => $data['nom'] ?? null,
-                'pseudo' => $data['pseudo'] ?? null,
-                'groupes' => $data['groupes'] ?? null,
-                'contact' => $data['contact'] ?? null,
-                'email' => $data['email'] ?? null,
-                'adresse' => $data['adresse'] ?? null,
-                'province' => $data['province'] ?? null,
-                'sexe' => $data['sexe'] ?? null,
-                'cin' => $data['cin'] ?? null,
-                'date_naissance' => $data['date_naissance'] ?? null,
-                'pension' => $data['pension'] ?? null,
-                'statut' => $data['statut'] ?? null,
-                'hologramme' => $data['hologramme'] ?? null,
+                'num_wipo'       => $data['numwipo'] ?? null,
+                'date_adh'       => $date_adh,  
+                'categorie'      => $data['cat'] ?? null,
+                'nom'            => $data['nom'] ?? null,
+                'pseudo'         => $data['pseudo'] ?? null,
+                'groupes'        => $data['groupes'] ?? null,
+                'contact'        => $data['contact'] ?? null,
+                'email'          => $data['email'] ?? null,
+                'adresse'        => $data['adresse'] ?? null,
+                'province'       => $data['province'] ?? null,
+                'sexe'           => $data['sexe'] ?? null,
+                'cin'            => $cin,
+                'date_naissance' => $date_naissance,  
+                'pension'        => $data['pension'] ?? null,
+                'statut'         => $data['statut'] ?? null,
+                'hologramme'     => $data['hologramme'] ?? null,
             ]
         );
     }
 
-    // Log activité
     ActivityLog::create([
         'user_id' => session('admin_id'),
         'action' => 'a importé',
@@ -382,6 +419,9 @@ public function import(Request $request)
 
     return redirect()->route('artists.index')->with('success', 'Import terminé avec succès !');
 }
+
+
+
 
 
 }

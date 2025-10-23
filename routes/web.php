@@ -40,6 +40,8 @@ Route::delete('/admin/{id}', [AuthController::class, 'destroy'])->name('admin.de
 Route::post('/admin/update-info', [AuthController::class, 'updateInfo'])->name('admin.updateInfo');
 Route::post('/admin/update-password', [AuthController::class, 'updatePassword'])->name('admin.updatePassword');
 Route::post('/admin/deleteAccount', [AuthController::class, 'deleteAccount'])->name('admin.deleteAccount');
+Route::post('/admin/update-photo', [AuthController::class, 'updatePhoto'])->name('admin.updatePhoto');
+
 
 use App\Http\Controllers\ArtistController;
 Route::get('/artists', [ArtistController::class, 'index'])->name('artists.index'); // liste des artistes 

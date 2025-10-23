@@ -160,9 +160,11 @@
         aside img {
             width: 160px;
             height: 160px;
-            object-fit: contain;
+            /* object-fit: contain; */
             margin-bottom: 15px;
             filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.2));
+            border-radius: 50%;
+            transition: transform 300ms ease;
         }
 
         aside img:hover {
@@ -346,6 +348,10 @@
         height: 200px;
     } */
         }
+        
+
+
+
 
     </style>
 </head>
@@ -610,7 +616,15 @@
                 <div class="user">
 
                     <aside class="silde-in-right">
-                        <img src="images/logo3.png" alt="">
+
+
+                         @php
+            $admin = \App\Models\Admin::find(session('admin_id'));
+        @endphp
+
+<img src="{{ asset('storage/' . $admin->photo) }}" alt="Photo de profil" class="photo-profil">
+
+                        
                         <h2>Vous êtes connecté en tant que : </h2>
                         <h3 class="username">{{$username}}</h3>
                         <p>Votre tableau de bord est prêt. Vous pouvez gérer, affiner et optimiser chaque détail.</p>
