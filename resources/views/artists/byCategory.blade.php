@@ -413,7 +413,7 @@
     {{ $artists->links() }}
 
     <!-- Bouton d'export CSV des oeuvres pour cette catégorie -->
-    <a href="{{ route('oeuvres.export', $categorie) }}" style="padding:8px 12px; background:#10B981; color:white; border-radius:6px; text-decoration:none; margin-left:8px;">Exporter oeuvres (CSV)</a>
+    
 
         <form onsubmit="goToPage2(event)" style="display:flex; align-items:center; gap:5px;">
             <label>Aller à la page :</label>

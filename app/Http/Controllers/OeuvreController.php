@@ -8,6 +8,9 @@ use App\Models\Artist;
 use App\Models\OeuvreMusique;
 use App\Models\OeuvreNonMusique;
 use App\Models\ActivityLog;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Str;
+use Exception;
 
 class OeuvreController extends Controller
 {
@@ -15,10 +18,28 @@ class OeuvreController extends Controller
     {
         $musiques = OeuvreMusique::all();
         $nonMusiques = OeuvreNonMusique::all();
-        $recentOeuvres = OeuvreMusique::orderBy('date_depot','desc')->take(5)->get();
-        // if (!$recentOeuvres) {
-        //     $recentOeuvres = OeuvreNonMusique::orderBy('date_depot','desc')->take(5)->get();
-        // }
+
+        // Récupère quelques-unes des plus récentes de chaque table, fusionne et trie
+        $recentMusiques = OeuvreMusique::orderBy('date_depot', 'desc')->take(5)->get()->map(function($m) {
+            $arr = $m->toArray();
+            // s'assurer que la clé 'categorie' existe (déjà présente pour musique)
+            $arr['categorie'] = $arr['categorie'] ?? 'LYR';
+            return (object) $arr;
+        });
+
+        $recentNon = OeuvreNonMusique::orderBy('date_depot', 'desc')->take(5)->get()->map(function($n) {
+            $arr = $n->toArray();
+            // Normaliser le champ 'categories' en 'categorie' pour l'affichage
+            $arr['categorie'] = $arr['categories'] ?? null;
+            return (object) $arr;
+        });
+
+        $combined = $recentMusiques->concat($recentNon)->sortByDesc(function($item) {
+            return $item->date_depot ?? null;
+        })->values();
+
+        $recentOeuvres = $combined->take(5);
+
         return view('oeuvres.index', compact('musiques', 'nonMusiques', 'recentOeuvres'));
     }
 
@@ -197,6 +218,118 @@ if ($request->filled('search')) {
         ];
 
         return response()->stream($callback, 200, $responseHeaders);
+    }
+
+    /**
+     * Importer un fichier CSV ou XLSX contenant des oeuvres.
+     * Attendu : colonnes adaptées (pour musique : categorie='LYR' ; pour non musique : categories in LIT/DRA/AAV)
+     */
+    public function import(Request $request)
+    {
+        if (!session()->has('admin_id')) {
+            return redirect('/login');
+        }
+
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt,xlsx,xls'
+        ]);
+
+        $file = $request->file('file');
+        $path = $file->getRealPath();
+
+        $rows = [];
+
+        try {
+            // If maatwebsite/excel is available we use it to read both xlsx and csv
+            $collection = Excel::toCollection(new \ArrayObject, $file);
+            // Excel::toCollection returns a collection of sheets; we use the first sheet
+            if ($collection->count() > 0) {
+                $sheet = $collection->first();
+                foreach ($sheet as $row) {
+                    $rows[] = $row->toArray();
+                }
+            }
+        } catch (Exception $e) {
+            // Fallback: try native CSV parsing
+            if (($handle = fopen($path, 'r')) !== false) {
+                $header = null;
+                while (($data = fgetcsv($handle, 0, ',')) !== false) {
+                    if (!$header) {
+                        $header = $data;
+                        continue;
+                    }
+                    $rows[] = array_combine($header, $data);
+                }
+                fclose($handle);
+            } else {
+                return back()->with('error', 'Impossible de lire le fichier importé.');
+            }
+        }
+
+        if (count($rows) === 0) {
+            return back()->with('error', 'Aucune ligne trouvée dans le fichier.');
+        }
+
+        $created = 0;
+        foreach ($rows as $r) {
+            // Normalize keys to lower case
+            $row = array_change_key_case((array)$r, CASE_LOWER);
+
+            // Decide if music or non-music
+            $isMusic = false;
+            if (isset($row['categorie']) && strtoupper(trim($row['categorie'])) === 'LYR') {
+                $isMusic = true;
+            }
+            // Some files may use 'categories' for non-music
+            if ($isMusic) {
+                // Map expected fields for OeuvreMusique
+                $data = [
+                    'date_depot' => $row['date_depot'] ?? null,
+                    'code_titre' => $row['code_titre'] ?? ($row['code'] ?? Str::random(8)),
+                    'titre' => $row['titre'] ?? null,
+                    'categorie' => 'LYR',
+                    'num' => $row['num'] ?? null,
+                    'nom' => $row['nom'] ?? null,
+                    'pseudo' => $row['pseudo'] ?? null,
+                    'groupes' => $row['groupes'] ?? null,
+                    'qualite' => $row['qualite'] ?? null,
+                    'droit' => $row['droit'] ?? null,
+                    'part' => $row['part'] ?? null,
+                    'hologramme' => $row['hologramme'] ?? null,
+                ];
+
+                // Prevent creating duplicates if code_titre exists
+                if (!OeuvreMusique::where('code_titre', $data['code_titre'])->exists()) {
+                    OeuvreMusique::create($data);
+                    $created++;
+                }
+            } else {
+                // Non music
+                $data = [
+                    'code_titre' => $row['code_titre'] ?? ($row['code'] ?? Str::random(8)),
+                    'date_depot' => $row['date_depot'] ?? null,
+                    'num' => $row['num'] ?? null,
+                    'titre' => $row['titre'] ?? null,
+                    'categories' => $row['categories'] ?? ($row['categorie'] ?? null),
+                    'auteur' => $row['auteur'] ?? null,
+                    'part' => $row['part'] ?? null,
+                ];
+
+                if (!OeuvreNonMusique::where('code_titre', $data['code_titre'])->exists()) {
+                    OeuvreNonMusique::create($data);
+                    $created++;
+                }
+            }
+        }
+
+        ActivityLog::create([
+            'user_id' => session('admin_id'),
+            'action' => 'a importé',
+            'model_type' => "oeuvres",
+            'details' => "Import de $created oeuvres via fichier",
+        ]);
+
+        return back()->with('success', "Import terminé : $created oeuvres créées.");
     }
     public function edit($code_titre)
     {

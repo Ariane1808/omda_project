@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
-
+<title>Listes des Oeuvres</title>
 @include('includes.loader')
 
 <body>

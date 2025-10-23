@@ -89,6 +89,8 @@ Route::post('/oeuvres/musique/store', [OeuvreMusiqueController::class, 'store'])
 use App\Http\Controllers\OeuvreNonMusiqueController;
 Route::get('/artists/{artist}/oeuvres/nonmusique/create', [OeuvreNonMusiqueController::class, 'create'])->name('oeuvres.nonmusiques.create');
 Route::post('/oeuvres/nonmusique/store', [OeuvreNonMusiqueController::class, 'store'])->name('oeuvres.nonmusiques.store');
+// Import bulk oeuvres (CSV / XLSX)
+Route::post('/oeuvres/import', [OeuvreController::class, 'import'])->name('oeuvres.import');
 
 use App\Http\Controllers\EventController;
 Route::post('/events', [EventController::class, 'store'])->name('events.store');

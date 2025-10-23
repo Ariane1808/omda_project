@@ -194,21 +194,62 @@
                     </div>
                 </div>
             </div>
+{{-- importation des oeuvres --}}
+                <fieldset style="
+    border: 2px solid #3498db;
+    border-radius: 12px;
+    padding: 20px 20px 30px 20px;
+    max-width: 600px;
+    margin: 20px auto;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+">
+    <legend style="
+        font-weight: bold;
+        color: #3498db;
+        padding: 0 10px;
+        font-size: 1.2rem;
+    ">Importation de plusieurs œuvres</legend>
+
+    <form action="{{ route('oeuvres.import') }}" method="POST" enctype="multipart/form-data" id="importForm" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        @csrf
+        <!-- Input caché -->
+        <input type="file" name="file" id="fileInput" style="display: none;" accept=".csv, .xlsx">
+        
+        <!-- Bouton Parcourir -->
+        <button type="button" id="browseBtn"
+            style="padding: 10px 20px; background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s;">
+            Parcourir...
+        </button>
+
+        <!-- Nom du fichier -->
+        <span id="fileName" style="font-weight: bold; color: #333;">Aucun fichier choisi</span>
+
+        <!-- Bouton Importer -->
+        <button type="submit" id="importBtn"
+            style="padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s;">
+            Importer
+        </button>
+    </form>
+</fieldset>
 
             <div class="bottom" style="display: flex;gap: 30px;max-width: 1200px;margin: auto;padding: 0px 40px;align-items: center;">
+                
                 <div class="recent-oeuvre" style="width: 100%;">
                     <h2>Derniers oeuvres ajoutés</h2>
                     <ul>
-                        @foreach($recentOeuvres as $oeuvres)
+                        @foreach($recentOeuvres as $oeuvre)
+                        @php
+                            $cat = $oeuvre->categorie ?? $oeuvre->categories ?? null;
+                        @endphp
                         <li>
-                            @if ($oeuvres->categorie === 'LYR')
-                            <strong>{{ $oeuvres->nom}} ({{ $oeuvres->pseudo }})</strong>
-                            ({{ $oeuvres->categorie }}) - <em>{{ $oeuvres->titre}}</em>
-                            <em>{{ $oeuvres->date_depot }}</em>
+                            @if (strtoupper($cat ?? '') === 'LYR')
+                                <strong>{{ $oeuvre->nom ?? '' }} @if(!empty($oeuvre->pseudo)) ({{ $oeuvre->pseudo }}) @endif</strong>
+                                ({{ $cat }}) - <em>{{ $oeuvre->titre ?? '' }}</em>
+                                <em>{{ $oeuvre->date_depot ?? '' }}</em>
                             @else
-                            <strong>{{ $oeuvres->auteur }}</strong>
-                            ({{ $oeuvres->categories }}) - <em>{{ $oeuvres->titre}}</em>
-                            <em>{{ $oeuvres->date_depot }}</em>
+                                <strong>{{ $oeuvre->auteur ?? $oeuvre->nom ?? '' }}</strong>
+                                ({{ $cat }}) - <em>{{ $oeuvre->titre ?? '' }}</em>
+                                <em>{{ $oeuvre->date_depot ?? '' }}</em>
                             @endif
                         </li>
                         @endforeach
@@ -224,7 +265,20 @@
         }
 
     </script>
+</script>
 
+    <script>
+        const browseBtn = document.getElementById('browseBtn');
+        const fileInput = document.getElementById('fileInput');
+        const fileNameSpan = document.getElementById('fileName');
 
+        if (browseBtn && fileInput) {
+            browseBtn.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', () => {
+                fileNameSpan.textContent = fileInput.files.length > 0 ? fileInput.files[0].name : "Aucun fichier choisi";
+            });
+        }
+    </script>
 </body>
 </html>
