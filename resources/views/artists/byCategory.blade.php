@@ -199,99 +199,97 @@
            
         </div>
         </div>
-        <button id="addBtn" class="button" style="padding:5px 10px; cursor:pointer;"><span class="button-content">Ajouter un artiste</span></button>
+        <button class="button" id="addBtn"
+            style=" background-color: #e5e7eb;display: flex; align-items:center; gap: 10px; border-radius: 30px; padding:10px; border:none;box-shadow: -10px -10px 20px white, 10px 10px 20px rgb(153, 161, 175), inset -10px -10px 20px rgb(209, 213, 220);"><span
+                class="button-content">Ajouter un artiste</span></button>
 
         <!-- Formulaire caché au départ -->
         <div id="addForm" style="display:none; margin-bottom: 20px; padding:10px; border:1px solid #ccc; border-radius:5px; background:#f9f9f9;">
             <form action="{{ route('artists.store') }}" method="POST">
                 @csrf
-                
+                <div style="margin-bottom:5px;">
+                    <label>Numéro OMDA:</label>
+                    <input type="text" name="num" required>
+                </div>
+                <div style="margin-bottom:5px;">
                     <label>Numéro Wipo:</label>
-                    <input type="text" name="num_wipo" required>
-                
-                
+                    <input type="text" name="num_wipo">
+                </div>
+                <div style="margin-bottom:5px;">
                     <label>Date d'adhésion:</label>
                     <input type="date" name="date_adh" required>
-                
-                <!-- 
-                    <label>Numéro Omda:</label>
-                    <input type="text" name="num" required>
-                </div> -->
-                
+                </div>
+                <div style="margin-bottom:5px;">
                     <label>Catégories:</label>
-                    <!-- <input type="text" name="categorie" value= ""> -->
                     <select name="categorie" id="">
                         <option value="LIT" @selected($categorie == 'LIT')>Littérature</option>
                         <option value="LYR" @selected($categorie == 'LYR')>Musique</option>
                         <option value="DRAM" @selected($categorie == 'DRA')>Dramatique</option>
                         <option value="AAV" @selected($categorie == 'AAV')>Audiovisuel</option>
                     </select>
-
-                
-                
+                </div>
+                <div style="margin-bottom:5px;">
                     <label>Nom:</label>
                     <input type="text" name="nom" required>
-                
-                
+                </div>
+                <div style="margin-bottom:5px;">
                     <label>Pseudo:</label>
                     <input type="text" name="pseudo" required>
-                
-                
+                </div>
+                <div style="margin-bottom:5px;">
                     <label>Groupe:</label>
-                    <input type="text" name="groupes" required>
-                
-                
+                    <input type="text" name="groupes">
+                </div>
+                <div style="margin-bottom:5px;">
                     <label>contact:</label>
                     <input type="text" name="contact" required>
-                
-                
+                </div>
+                <div style="margin-bottom:5px;">
                     <label>Email:</label>
-                    <input type="text" name="email" required>
-                
-                
+                    <input type="text" name="email">
+                </div>
+                <div style="margin-bottom:5px;">
                     <label>Adresse:</label>
                     <input type="text" name="adresse" required>
-                
-                
+                </div>
+                <div style="margin-bottom:5px;">
                     <label>Province:</label>
-                   <select name="province" id="">
+                    <select name="province" id="">
                         <option value="ANTANANARIVO">ANTANANARIVO</option>
                         <option value="TOAMASINA">TOAMASINA</option>
                         <option value="ANTSIRANANA">ANTSIRANANA</option>
                         <option value="MAHAJANGA">MAHAJANGA</option>
                         <option value="FIANARANTSOA">FIANARANTSOA</option>
                         <option value="TOLIARA">TOLIARA</option>
-                     </select>
-                
-                
-                    <!-- <input type="text" name="sexe" required> -->
-                     <label>Sexe :</label>
-                     <input type="radio" name="sexe" value="H" id="homme" required>
-                     <label for="homme">Homme</label>
-
-                     <input type="radio" name="sexe" value="F" id="femme">
-                     <label for="femme">Femme</label>
-
-                
-                
+                    </select>
+                </div>
+                <div style="margin-bottom:5px; flex-direction: column;max-width: 200px;align-items: flex-start;">
+                    <label>Sexe :</label>
+                    <input type="radio" name="sexe" value="H" id="homme" required>
+                    <label for="homme">Homme</label>
+                    <input type="radio" name="sexe" value="F" id="femme">
+                    <label for="femme">Femme</label>
+                </div>
+                <div style="margin-bottom:5px;">
                     <label>CIN:</label>
                     <input type="text" name="cin" required>
-                
-                
-                    <label>Date de naissande:</label>
+                </div>
+                <div style="margin-bottom:5px;">
+                    <label>Date de naissance:</label>
                     <input type="date" name="date_naissance" required>
-                
-                
+                </div>
+                <div style="margin-bottom:5px;">
                     <label>Pension:</label>
-                    <input type="text" name="pension" required>
-                
+                    <input type="text" name="pension">
+                </div>
+                <div style="margin-bottom:5px;">
                     <label>Statut:</label>
                     <input type="text" name="statut">
-                
-                
+                </div>
+                <div style="margin-bottom:5px;">
                     <label>Hologramme:</label>
                     <input type="text" name="hologramme">
-                
+                </div>
 
                 <button type="submit" style="padding:5px 10px; cursor:pointer;">Enregistrer</button>
             </form>

@@ -16,9 +16,9 @@ class OeuvreController extends Controller
         $musiques = OeuvreMusique::all();
         $nonMusiques = OeuvreNonMusique::all();
         $recentOeuvres = OeuvreMusique::orderBy('date_depot','desc')->take(5)->get();
-        if (!$recentOeuvres) {
-            $recentOeuvres = OeuvreNonMusique::orderBy('date_depot','desc')->take(5)->get();
-        }
+        // if (!$recentOeuvres) {
+        //     $recentOeuvres = OeuvreNonMusique::orderBy('date_depot','desc')->take(5)->get();
+        // }
         return view('oeuvres.index', compact('musiques', 'nonMusiques', 'recentOeuvres'));
     }
 
@@ -119,10 +119,10 @@ public function byCategory(Request $request, $categorie)
     // Déterminer le modèle selon la catégorie
   if ($categorie == 'LYR') {
     $query = OeuvreMusique::where('categorie', $categorie);
-    $fields = ['nom', 'titre', 'code_titre', 'pseudo'];
+    $fields = ['nom', 'titre','num', 'code_titre', 'pseudo'];
 } else {
     $query = OeuvreNonMusique::where('categories', $categorie);
-    $fields = ['titre', 'code_titre', 'auteur'];
+    $fields = ['titre', 'code_titre','num', 'auteur'];
 }
 
 if ($request->filled('search')) {

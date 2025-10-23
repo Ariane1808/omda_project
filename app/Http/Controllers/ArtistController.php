@@ -238,6 +238,150 @@ public function show($num)
 }
 
 
+    /**
+     * Export all artists as a CSV (Excel-compatible) download.
+     */
+ public function exportAll(Request $request)
+{
+    if (!session()->has('admin_id')) {
+        return redirect('/login');
+    }
+
+    $fileName = 'artists_export_' . date('Ymd_His') . '.xls';
+    $artists = Artist::all();
+
+    $columns = [
+        'num' => 'Numéro OMDA',
+        'num_wipo' => 'Numéro WIPO',
+        'date_adh' => 'Date d’adhésion',
+        'categorie' => 'Catégorie',
+        'nom' => 'Nom',
+        'pseudo' => 'Pseudo',
+        'groupes' => 'Groupes',
+        'contact' => 'Contact',
+        'email' => 'Email',
+        'adresse' => 'Adresse',
+        'province' => 'Province',
+        'sexe' => 'Sexe',
+        'cin' => 'CIN',
+        'date_naissance' => 'Date de naissance',
+        'pension' => 'Pension',
+        'statut' => 'Statut',
+        'hologramme' => 'Hologramme'
+    ];
+
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+    $xml .= '<?mso-application progid="Excel.Sheet"?>' . "\n";
+    $xml .= '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+        xmlns:o="urn:schemas-microsoft-com:office:office"
+        xmlns:x="urn:schemas-microsoft-com:office:excel"
+        xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+        xmlns:html="http://www.w3.org/TR/REC-html40">' . "\n";
+
+    $xml .= '<Styles>
+        <Style ss:ID="Header">
+            <Font ss:Bold="1" ss:Color="#FFFFFF"/>
+            <Interior ss:Color="#4F81BD" ss:Pattern="Solid"/>
+            <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+        </Style>
+        <Style ss:ID="Default">
+            <Alignment ss:Vertical="Center"/>
+        </Style>
+    </Styles>';
+
+    $xml .= '<Worksheet ss:Name="Artistes"><Table>';
+
+    // En-têtes
+    $xml .= '<Row>';
+    foreach ($columns as $header) {
+        $xml .= '<Cell ss:StyleID="Header"><Data ss:Type="String">' . htmlspecialchars($header) . '</Data></Cell>';
+    }
+    $xml .= '</Row>';
+
+    // Données
+    foreach ($artists as $artist) {
+        $xml .= '<Row>';
+        foreach (array_keys($columns) as $col) {
+            if ($col === 'num_omda') {
+                $value = 'OMDA-' . str_pad($artist->num ?? '', 4, '0', STR_PAD_LEFT);
+            } else {
+                $value = $artist->{$col} ?? '';
+            }
+            $xml .= '<Cell ss:StyleID="Default"><Data ss:Type="String">' . htmlspecialchars($value) . '</Data></Cell>';
+        }
+        $xml .= '</Row>';
+    }
+
+    $xml .= '</Table></Worksheet></Workbook>';
+
+    // Log d'activité
+    ActivityLog::create([
+        'user_id' => session('admin_id'),
+        'action' => 'a exporté',
+        'model_type' => 'les artistes',
+        'details' => $fileName,
+    ]);
+
+    return response($xml)
+        ->header('Content-Type', 'application/vnd.ms-excel')
+        ->header('Content-Disposition', "attachment; filename=\"{$fileName}\"")
+        ->header('Cache-Control', 'max-age=0');
+}
+
+public function import(Request $request)
+{
+    if (!session()->has('admin_id')) {
+        return redirect('/login');
+    }
+
+    $request->validate([
+        'file' => 'required|file|mimes:csv,txt',
+    ]);
+
+    $file = $request->file('file');
+    $path = $file->getRealPath();
+
+    $rows = array_map('str_getcsv', file($path));
+    $header = array_map('trim', $rows[0]); // première ligne = noms de colonnes
+    unset($rows[0]); // supprimer la ligne des en-têtes
+
+    foreach ($rows as $row) {
+        $data = array_combine($header, $row);
+
+        // Mettre à jour si le num existe, sinon créer
+        Artist::updateOrCreate(
+            ['num' => $data['num']], // clé unique
+            [
+                'num_wipo' => $data['num_wipo'] ?? null,
+                'date_adh' => $data['date_adh'] ?? null,
+                'categorie' => $data['categorie'] ?? null,
+                'nom' => $data['nom'] ?? null,
+                'pseudo' => $data['pseudo'] ?? null,
+                'groupes' => $data['groupes'] ?? null,
+                'contact' => $data['contact'] ?? null,
+                'email' => $data['email'] ?? null,
+                'adresse' => $data['adresse'] ?? null,
+                'province' => $data['province'] ?? null,
+                'sexe' => $data['sexe'] ?? null,
+                'cin' => $data['cin'] ?? null,
+                'date_naissance' => $data['date_naissance'] ?? null,
+                'pension' => $data['pension'] ?? null,
+                'statut' => $data['statut'] ?? null,
+                'hologramme' => $data['hologramme'] ?? null,
+            ]
+        );
+    }
+
+    // Log activité
+    ActivityLog::create([
+        'user_id' => session('admin_id'),
+        'action' => 'a importé',
+        'model_type' => 'les artistes',
+        'details' => $file->getClientOriginalName(),
+    ]);
+
+    return redirect()->route('artists.index')->with('success', 'Import terminé avec succès !');
+}
 
 
 }

@@ -322,10 +322,7 @@
 
         }
 
-        .flatpickr-months .flatpickr-month {
-            background: #2cbaec;
-        }
-      
+        
         #adminModal {
             display: none;
             position: fixed;
