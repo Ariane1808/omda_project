@@ -8,9 +8,8 @@ use App\Models\Artist;
 use App\Models\OeuvreMusique;
 use App\Models\OeuvreNonMusique;
 use App\Models\ActivityLog;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Str;
-use Exception;
+use Throwable;
 
 class OeuvreController extends Controller
 {
@@ -239,18 +238,23 @@ if ($request->filled('search')) {
 
         $rows = [];
 
-        try {
-            // If maatwebsite/excel is available we use it to read both xlsx and csv
-            $collection = Excel::toCollection(new \ArrayObject, $file);
-            // Excel::toCollection returns a collection of sheets; we use the first sheet
-            if ($collection->count() > 0) {
-                $sheet = $collection->first();
-                foreach ($sheet as $row) {
-                    $rows[] = $row->toArray();
+        // Try using maatwebsite/excel if it's installed; otherwise fallback to native CSV parsing
+        if (class_exists('\Maatwebsite\Excel\Facades\Excel')) {
+            try {
+                $collection = \Maatwebsite\Excel\Facades\Excel::toCollection(new \ArrayObject, $file);
+                if ($collection->count() > 0) {
+                    $sheet = $collection->first();
+                    foreach ($sheet as $row) {
+                        $rows[] = $row->toArray();
+                    }
                 }
+            } catch (Throwable $e) {
+                // if any error occurs while using the package, fallback to CSV parsing below
             }
-        } catch (Exception $e) {
-            // Fallback: try native CSV parsing
+        }
+
+        // If rows still empty, try native CSV parsing as a fallback
+        if (count($rows) === 0) {
             if (($handle = fopen($path, 'r')) !== false) {
                 $header = null;
                 while (($data = fgetcsv($handle, 0, ',')) !== false) {
