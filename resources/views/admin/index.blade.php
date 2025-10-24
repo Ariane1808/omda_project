@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="{{ asset('css/flatpickr.min.css') }}">
     <script src="{{ asset('js/flatpickr.min.js') }}"></script>
 
+    <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css">
+<script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
+
     <style>
         /* Aside avec slide in/out */
         aside {
@@ -359,6 +362,69 @@
             }
         }
         
+        /* Zone d’aperçu circulaire pour recadrage */
+.cropper-container {
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    margin: 15px auto;
+    border: 3px solid #3498db;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+.cropper-container img {
+    max-width: 100%;
+}
+
+  .profile-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 15px 0;
+}
+
+.profile-photo-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.profile-photo-wrapper:hover {
+    transform: scale(1.05);
+}
+
+.profile-photo-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.profile-photo-wrapper:hover .photo-overlay {
+    opacity: 1;
+}
+
+.photo-overlay i {
+    color: white;
+    font-size: 24px;
+}
+
+
     </style>
 </head>
 
@@ -535,7 +601,7 @@
                 <!-- Modal Formulaire -->
                 <div id="adminModal">
                     <div
-                        style="background: rgb(255, 255, 255); backdrop-filter: blur(15px); padding:30px; border-radius:12px; width:90%; max-width:400px; position:relative; box-shadow: 0 8px 20px rgba(0,0,0,0.3);">
+                        style="margin-top:-300px;background: rgb(255, 255, 255); backdrop-filter: blur(15px); padding:30px; border-radius:12px; width:90%; max-width:400px; position:relative; box-shadow: 0 8px 20px rgba(0,0,0,0.3);">
                         <span id="closeModal"
                             style="position:absolute; top:15px; right:15px; cursor:pointer; font-size:1.2rem;">✖</span>
                         <h2>Ajouter un administrateur</h2>
@@ -551,8 +617,22 @@
                         @endif
 
                         <form action="{{ route('admin.store') }}" method="POST"
-                            style="display:flex; flex-direction:column; gap:15px; margin-top:15px;">
+                            style="display:flex; flex-direction:column; gap:15px; margin-top:15px;"  enctype="multipart/form-data">
                             @csrf
+                            <div style="text-align:center;">
+    <label for="photo" style="font-weight:bold;">Choisissez une photo :</label>
+    <input type="file" id="photo" name="photo" accept="image/*" style="margin-top:8px;">
+
+    <div id="previewContainer">
+        <img id="previewImage" style="width:100%; display:none;">
+    </div>
+
+    <button type="button" id="saveCrop" 
+        style="padding:8px 15px; background:#3498db; color:white; border:none; border-radius:5px; cursor:pointer;">
+        Sauvegarder le recadrage
+    </button>
+</div>
+
                             <div>
                                 <label for="username">Nom d’utilisateur</label>
                                 <input type="text" name="username" id="username" required
@@ -673,6 +753,119 @@
                             document.body.classList.remove('modal-open');
                         }
                     });
+
+
+                            document.addEventListener("DOMContentLoaded", () => {
+    // ======= Ton code existant =======
+    const aside = document.querySelector("aside");
+    const logoutLink = document.getElementById("logoutLink");
+    // ... tout le reste déjà présent ...
+
+    // ======= CropperJS pour la photo =======
+    const photoInput = document.getElementById('photo');
+    const previewImage = document.getElementById('previewImage');
+    let cropper;
+
+    if(photoInput) {
+        photoInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+
+                // Détruire l'ancien cropper si existant
+                if (cropper) cropper.destroy();
+
+                // Initialiser CropperJS
+                cropper = new Cropper(previewImage, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    movable: true,
+                    zoomable: true,
+                    rotatable: false,
+                    scalable: false
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    const saveCropBtn = document.getElementById('saveCrop');
+    const photoInputField = document.getElementById('photo');
+
+
+    // sauvegarde du recadrage
+//     saveCropBtn.addEventListener('click', () => {
+//     if (cropper) {
+//         const canvas = cropper.getCroppedCanvas({
+//             width: 300,
+//             height: 300
+//         });
+
+//         canvas.toBlob((blob) => {
+//             const file = new File([blob], photoInputField.files[0].name, { type: 'image/png' });
+
+//             const dataTransfer = new DataTransfer();
+//             dataTransfer.items.add(file);
+//             photoInputField.files = dataTransfer.files;
+
+//             // Afficher l’aperçu
+//             previewImage.src = URL.createObjectURL(file);
+//         }, 'image/png');
+//     }
+    
+// });
+ // Sauvegarder le recadrage
+    const asidePhoto = document.getElementById('asidePhoto');
+        saveCropBtn.addEventListener('click', () => {
+        if (!cropper) return;
+
+        const canvas = cropper.getCroppedCanvas({
+            width: 300,
+            height: 300
+        });
+
+        canvas.toBlob((blob) => {
+            // Crée un nouveau fichier pour le formulaire
+            const file = new File([blob], photoInput.files[0].name, { type: 'image/png' });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            photoInput.files = dataTransfer.files;
+
+            // Mettre à jour l’aperçu dans le formulaire
+            previewImage.src = URL.createObjectURL(file);
+
+            // Mettre à jour l’aside directement
+            asidePhoto.src = URL.createObjectURL(file);
+        }, 'image/png');
+    });
+    // Exemple : récupérer l'image recadrée avant l'upload
+    // const croppedDataUrl = cropper.getCroppedCanvas().toDataURL('image/jpeg');
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const changePhotoBtn = document.getElementById('changePhotoBtn');
+    const photoInput = document.getElementById('photoInput');
+    const photoForm = document.getElementById('photoForm');
+
+    changePhotoBtn.addEventListener('click', () => {
+        photoInput.click();
+    });
+
+    photoInput.addEventListener('change', () => {
+        if (photoInput.files.length > 0) {
+            photoForm.submit();
+        }
+    });
+});
+
+
+
 
 
                     document.addEventListener("DOMContentLoaded", () => {
@@ -883,11 +1076,28 @@
                             }
                         });
                     });
+
+                     const photoInput = document.getElementById('photo');
+    const previewImage = document.getElementById('previewImage');
+    const previewContainer = document.getElementById('previewContainer');
+
+    photoInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewImage.src = "#";
+            previewImage.style.display = 'none';
+        }
+    });
+
+    
                 </script>
-
-
-
-
 
 
 
@@ -896,7 +1106,42 @@
 
 
             <aside class="silde-in-right">
-                <img src="images/logo3.png" alt="">
+                
+                {{-- <img src="{{ asset('storage/' . $admin->photo) }}" alt="Photo de profil" width="120" class="profile-photo" style="width: 100%;max-width: 150px;height: auto;aspect-ratio: 1/1;border-radius: 50%;object-fit: cover;"> --}}
+                
+              <div class="profile-container">
+    <div class="profile-photo-wrapper">
+        @php
+            $admin = \App\Models\Admin::find(session('admin_id'));
+        @endphp
+
+<img src="{{ asset('storage/' . $admin->photo) }}" alt="Photo de profil" class="photo-profil">
+
+        <div class="photo-overlay" id="changePhotoBtn">
+            <i class="bi bi-camera-fill"></i>
+        </div>
+    </div>
+    <form id="photoForm" action="{{ route('admin.updatePhoto') }}" method="POST" enctype="multipart/form-data" style="display:none;">
+        @csrf
+        <input type="file" id="photoInput" name="photo" accept="image/*">
+    </form>
+
+    <!-- Modal Cropper -->
+<div id="cropModal" style="display:none; position:fixed; inset:0; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); justify-content:center; align-items:center; z-index:1000;">
+  <div style="background:white; padding:20px; border-radius:10px; max-width:400px; width:90%; text-align:center; position:relative;">
+    <span id="closeCropModal" style="position:absolute; top:10px; right:15px; cursor:pointer;">✖</span>
+    <h3>Recadrer la photo</h3>
+    <div style="width:250px; height:250px; margin:10px auto;">
+      <img id="cropImage" src="" style="max-width:100%; display:block;">
+    </div>
+    <button id="saveCropBtn" style="padding:8px 15px; background:#3498db; color:white; border:none; border-radius:5px; cursor:pointer;">Sauvegarder</button>
+  </div>
+</div>
+
+</div>
+  
+
+
                 <h2>Bienvenue dans votre centre d'Administration</h2>
                 <h3 class="username">{{ $username }}</h1>
                     <div class="link">

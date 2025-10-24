@@ -176,8 +176,17 @@
                                             <th>Code</th>
                                             <th>Titre</th>
                                             <th>Date de depot</th>
+                                              @foreach ($oeuvres as $oeuvre)
+                                            @if ($oeuvre->categorie === 'LYR')
+                                                <th>Qualité</th>
+                                                <th>Droit</th>
+                                                @break
+                                            @endif
+                                            @endforeach
                                             <th>part</th>
                                             <th>Action</th>
+                                            
+                                            
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -186,7 +195,14 @@
                                                 <td>{{ $oeuvre->code_titre }}</td>
                                                 <td>{{ $oeuvre->titre }}</td>
                                                 <td>{{ $oeuvre->date_depot }}</td>
+                                                
+                                                @if ($oeuvre->categorie === 'LYR')
+                                                 <td>{{ $oeuvre->qualite }}</td>
+                                                <td>{{ $oeuvre->droit }}</td>
+                                                @endif
+                                                
                                                 <td>{{ $oeuvre->part }}</td>
+                                               
                                                 <td>
                                                     <!-- modif -->
                                                     <a href="{{ route('oeuvres.edit', $oeuvre->code_titre) }}"
