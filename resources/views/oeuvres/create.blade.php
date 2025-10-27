@@ -224,7 +224,7 @@
     <label for="">Date depôt: </label>
     <input type="date" name="date_depot" required>
     <label for="">Code titre:</label>
-    <input type="text" name="code_titre" required>
+    <input type="text" name="code_titre">
     <label for="">Titre: </label>
     <input type="text" name="titre" required>
     <label for="">Catégorie: </label>
@@ -236,7 +236,7 @@
     <label for="">Pseudo:</label>
     <input type="text" name="pseudo" value="{{ $artist->pseudo }}" required>
     <label for="">Groupes:</label>
-    <input type="text" name="groupes" value="{{ $artist->groupes }}" required>
+    <input type="text" name="groupes" value="{{ $artist->groupes }}">
     <label for="">Qualité: </label>
     <select name="qualite" id="">
         <option value="A">A</option>
@@ -244,11 +244,11 @@
         <option value="C">C</option>
     </select>
     <label for="">Droit: </label>
-    <input type="text" name="droit" required>
+    <input type="text" name="droit">
     <label for="">Part:</label>
     <input type="text" name="part" required>
     <label for="">Hologramme:</label>
-    <input type="text" name="hologramme">
+    <input type="text" name="hologramme"><br>
     <button class="btn btn-save" style="padding:5px 10px; cursor:pointer;">Ajouter une oeuvre</button><br>
     <a href="{{ route('oeuvres.index') }}" class="btn btn-cancel">Annuler</a>
     </form>

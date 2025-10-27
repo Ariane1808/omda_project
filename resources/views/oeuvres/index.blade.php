@@ -199,7 +199,7 @@
     border: 2px solid #3498db;
     border-radius: 12px;
     padding: 20px 20px 30px 20px;
-    max-width: 600px;
+    max-width: 450px;
     margin: 20px auto;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 ">

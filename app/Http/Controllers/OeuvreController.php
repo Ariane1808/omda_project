@@ -13,8 +13,9 @@ use Throwable;
 
 class OeuvreController extends Controller
 {
-    public function index()
-    {
+    public function index(Request $request)
+    {   
+         
         $musiques = OeuvreMusique::all();
         $nonMusiques = OeuvreNonMusique::all();
 
@@ -38,13 +39,39 @@ class OeuvreController extends Controller
         })->values();
 
         $recentOeuvres = $combined->take(5);
+        
+        $sort = $request->get('sort', 'num'); // par défaut trier par num
+        $order = $request->get('order', 'asc'); // par défaut asc
 
-        return view('oeuvres.index', compact('musiques', 'nonMusiques', 'recentOeuvres'));
+        $query = OeuvreMusique::query(); // ou OeuvreMusique si tu veux trier seulement celles-ci
+
+        // Applique le tri
+        $query->orderBy($sort, $order);
+
+        $oeuvres = $query->paginate(10); // pagination optionnelle
+
+    
+        return view('oeuvres.index', compact('musiques', 'nonMusiques', 'recentOeuvres','oeuvres', 'sort','order'));
     }
 
 
   public function create(Request $request)
 {
+    // $musique = $request->validate([
+    //         'date_depot' => 'required',
+    //         'code_titre' => 'nullable',
+    //         'titre' => 'required',
+    //         'categorie' => 'required',
+    //         'num' => 'required',
+    //         'nom' => 'required',
+    //         'pseudo' => 'required',
+    //         'groupes' => 'nullable',
+    //         'qualite' => 'required',
+    //         'droit' => 'nullable',
+    //         'part' => 'required',
+    //         'hologramme' => 'nullable'
+    //     ]);
+    // OeuvreMusique::create($musique);
     $type = $request->query('type');
     $num  = $request->query('num');
 
@@ -57,6 +84,20 @@ class OeuvreController extends Controller
     public function store(Request $request)
     {
         if ($request->type === 'musique') {
+            // $musique = $request->validate([
+            //     'date_depot' => 'required',
+            //     'code_titre' => 'nullable',
+            //     'titre' => 'required',
+            //     'categorie' => 'required',
+            //     'num' => 'required',
+            //     'nom' => 'required',
+            //     'pseudo' => 'required',
+            //     'groupes' => 'nullable',
+            //     'qualite' => 'required',
+            //     'droit' => 'nullable',
+            //     'part' => 'required',
+            //     'hologramme' => 'nullable'
+            // ]);
             OeuvreMusique::create([
                 'date_depot' => $request->date_depot,
                 'code_titre' => $request->code_titre,
@@ -137,22 +178,22 @@ ActivityLog::create([
 public function byCategory(Request $request, $categorie)
 {
     // Déterminer le modèle selon la catégorie
-  if ($categorie == 'LYR') {
-    $query = OeuvreMusique::where('categorie', $categorie);
-    $fields = ['nom', 'titre','num', 'code_titre', 'pseudo'];
-} else {
-    $query = OeuvreNonMusique::where('categories', $categorie);
-    $fields = ['titre', 'code_titre','num', 'auteur'];
-}
+    if ($categorie == 'LYR') {
+        $query = OeuvreMusique::where('categorie', $categorie);
+        $fields = ['nom', 'titre','num', 'code_titre', 'pseudo'];
+    } else {
+        $query = OeuvreNonMusique::where('categories', $categorie);
+        $fields = ['titre', 'code_titre','num', 'auteur'];
+    }
 
-if ($request->filled('search')) {
-    $search = $request->search;
-    $query->where(function($q) use ($fields, $search) {
-        foreach ($fields as $field) {
-            $q->orWhere($field, 'LIKE', "%{$search}%");
-        }
-    });
-}
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function($q) use ($fields, $search) {
+            foreach ($fields as $field) {
+                $q->orWhere($field, 'LIKE', "%{$search}%");
+            }
+        });
+    }
 
 
     // ✅ Utiliser la même requête pour la pagination
@@ -161,6 +202,44 @@ if ($request->filled('search')) {
 
     return view('oeuvres.list', compact('oeuvres', 'categorie'));
 }
+
+    /**
+     * Serve the list view and support server-side sorting/searching while
+     * keeping the user on the `oeuvres.list` blade.
+     */
+    public function list(Request $request, $categorie)
+    {
+        if ($categorie === 'LYR') {
+            $query = OeuvreMusique::where('categorie', $categorie);
+            $searchFields = ['nom', 'titre', 'code_titre', 'pseudo'];
+            $allowedSorts = ['code_titre', 'titre', 'num', 'nom', 'pseudo', 'date_depot'];
+        } else {
+            $query = OeuvreNonMusique::where('categories', $categorie);
+            $searchFields = ['titre', 'code_titre', 'auteur'];
+            $allowedSorts = ['code_titre', 'titre', 'num', 'auteur', 'date_depot'];
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($searchFields, $search) {
+                foreach ($searchFields as $field) {
+                    $q->orWhere($field, 'LIKE', "%{$search}%");
+                }
+            });
+        }
+
+        $sort = $request->get('sort', 'date_depot');
+        $order = $request->get('order', 'desc');
+        if (!in_array($sort, $allowedSorts)) {
+            $sort = 'date_depot';
+        }
+        $order = strtolower($order) === 'asc' ? 'asc' : 'desc';
+
+        $oeuvres = $query->orderBy($sort, $order)->paginate(25)->appends($request->query());
+        $oeuvres->onEachSide(0);
+
+        return view('oeuvres.list', compact('oeuvres', 'categorie', 'sort', 'order'));
+    }
 
     public function show($num)
     {

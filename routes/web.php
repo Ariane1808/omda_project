@@ -78,6 +78,8 @@ Route::post('/oeuvres', [OeuvreController::class, 'store'])->name('oeuvres.store
 Route::get('/oeuvres/category/{categorie}', [OeuvreController::class, 'byCategory'])->name('oeuvres.byCategory');
 // Export des oeuvres par catégorie (CSV)
 Route::get('/oeuvres/export/{categorie}', [OeuvreController::class, 'export'])->name('oeuvres.export');
+// Route qui sert la vue list (tri/search reste dans list.blade.php)
+Route::get('/oeuvres/list/{categorie}', [OeuvreController::class, 'list'])->name('oeuvres.list');
 Route::get('/oeuvres/{code_titre}/edit', [OeuvreController::class, 'edit'])->name('oeuvres.edit'); // modifier un artiste
 Route::put('/oeuvres/{code_titre}', [OeuvreController::class, 'update'])->name('oeuvres.update');
 Route::delete('/oeuvres/{code_titre}', [OeuvreController::class, 'destroy'])->name('oeuvres.destroy'); // supprimer

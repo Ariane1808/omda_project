@@ -148,31 +148,68 @@
             </div>
 
             @if($oeuvres->count() > 0)
-            <table class="excel-table">
+            @php
+                $sort = $sort ?? null;
+                $order = $order ?? 'desc';
+            @endphp
+            <table class="excel-table" id="artistTable">
                 <thead>
                     <tr>
-                        <th>Code titre</th>
-                        <th>Titre</th>
-                        <th>Numéro OMDA</th>
+                        <th data-href="{{ route('oeuvres.list', ['categorie' => $categorie, 'sort' => 'code_titre', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">
+                            Code titre
+                            @if ($sort === 'code_titre')
+                                {{ $order === 'asc' ? '▲' : '▼' }}
+                            @endif
+                        </th>
+                        <th data-href="{{ route('oeuvres.list', ['categorie' => $categorie, 'sort' => 'titre', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">Titre
+                            @if ($sort === 'titre')
+                                {{ $order === 'asc' ? '▲' : '▼' }}
+                            @endif
+                        </th>
+                        <th data-href="{{ route('oeuvres.list', ['categorie' => $categorie, 'sort' => 'num', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">Num OMDA
+                            @if ($sort === 'num')
+                                {{ $order === 'asc' ? '▲' : '▼' }}
+                            @endif
+                        </th>
                         @if ($categorie === 'LYR')
-                        <th>Nom</th>
-                        <th>Pseudo</th>
+                        <th data-href="{{ route('oeuvres.list', ['categorie' => $categorie, 'sort' => 'nom', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">Nom
+                            @if ($sort === 'nom')
+                                {{ $order === 'asc' ? '▲' : '▼' }}
+                            @endif
+                        </th>
+                        <th data-href="{{ route('oeuvres.list', ['categorie' => $categorie, 'sort' => 'pseudo', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">Pseudo
+                            @if ($sort === 'pseudo')
+                                {{ $order === 'asc' ? '▲' : '▼' }}
+                            @endif
+                        </th>
                         <th>Groupe</th>
-                        <th>Qualite</th>
+                        <th data-href="{{ route('oeuvres.list', ['categorie' => $categorie, 'sort' => 'qualite', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">Qualite
+                            @if ($sort === 'qualite')
+                                {{ $order === 'asc' ? '▲' : '▼' }}
+                            @endif
+                        </th>
                         <th>Part</th>
                         <th>Droit</th>
                         <th>Hologramme</th>
                         @else
-                        <th>Auteur</th>
+                        <th data-href="{{ route('oeuvres.list', ['categorie' => $categorie, 'sort' => 'auteur', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">Auteur
+                            @if ($sort === 'auteur')
+                                {{ $order === 'asc' ? '▲' : '▼' }}
+                            @endif
+                        </th>
                         <th>Part</th>
                         @endif
-                        <th>Date</th>
+                        <th data-href="{{ route('oeuvres.list', ['categorie' => $categorie, 'sort' => 'date_depot', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">Date
+                            @if ($sort === 'date_depot')
+                                {{ $order === 'asc' ? '▲' : '▼' }}
+                            @endif
+                        </th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($oeuvres as $oeuvre)
-                    <tr>
+                    <tr class="artist-row" data-href="{{ route('artists.show', $oeuvre->num) }}">
                         <td>{{ $oeuvre->code_titre}}</td>
                         <td>{{ $oeuvre->titre }}</td>
                         <td><a href="{{ route('artists.show', $oeuvre->num) }}">{{ $oeuvre->num }}</a></td>
@@ -244,6 +281,12 @@
             });
         });
 
+        document.querySelectorAll('th[data-href]').forEach(th => {
+            th.style.cursor = 'pointer';
+            th.addEventListener('click', () => {
+                window.location.href = th.dataset.href;
+            });
+        });
 
        
         const clearBtn = document.getElementById('clearSearch');
